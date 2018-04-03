@@ -1,0 +1,25 @@
+{
+  "name": "hospitalbee-node",
+  "version": "1.0.0",
+  "description": "The Backend for HospitalBee",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zhangks98/hospitalbee-node.git"
+  },
+  "author": "Team Tomorrow",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/zhangks98/hospitalbee-node/issues"
+  },
+  "homepage": "https://github.com/zhangks98/hospitalbee-node#readme",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "express": "^4.16.3",
+    "mysql": "^2.15.0",
+    "request": "^2.85.0"
+  }
+}
