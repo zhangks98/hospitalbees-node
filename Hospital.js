@@ -24,9 +24,9 @@ module.exports.queryOpenedHospital = function(callback){
     }
 }
 
-module.exports.addHospitalQueueTail = function(hospitalIPAddress, callback){
+module.exports.addHospitalQueueTail = function(hospitalID, callback){
     try{
-    database.query("UPDATE Hospital SET Hospital_QueueTail = Hospital_QueueTail + 1 WHERE Hospital_IPAddress = '"+hospitalIPAddress+"' AND Hospital_OpenClose = 1 ", function(err, result){
+    database.query("UPDATE Hospital SET Hospital_QueueTail = Hospital_QueueTail + 1 WHERE Hospital_HospitalID = '"+hospitalID+"' AND Hospital_OpenClose = 1 ", function(err, result){
     if(err) {console.log("Error happens in User.js addHospitalQueueTail() SELECT. " + err); return callback(0);}   //console.log(JSON.parse(JSON.stringify(result))[0].Booking_QueueNumber);
     return callback(1);
       });
@@ -35,9 +35,9 @@ module.exports.addHospitalQueueTail = function(hospitalIPAddress, callback){
     }
 }
 
-module.exports.queryHospitalQueueTail = function(hospitalIPAddress, callback){
+module.exports.queryHospitalQueueTail = function(hospitalID, callback){
   try{
-  database.query("SELECT Hospital_QueueTail FROM Hospital WHERE Hospital_IPAddress = '"+hospitalIPAddress+"' ", function(err, queueTail){
+  database.query("SELECT Hospital_QueueTail FROM Hospital WHERE Hospital_HospitalID = '"+hospitalID+"' ", function(err, queueTail){
   if(err) {console.log("Error happens in User.js queryHospitalQueueTail() SELECT. " + err); return callback(0, null);}   //console.log(JSON.parse(JSON.stringify(result))[0].Booking_QueueNumber);
   hospitaldata = JSON.parse(JSON.stringify(queueTail))[0];
   return callback(1, queueTail);

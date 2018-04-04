@@ -1,16 +1,15 @@
 var database = require('./Database.js');
 
-module.exports.addBooking = function(time, queueStatus, bookingStatus, queueNumber, userID,
+module.exports.addBooking = function(tid ,time, queueStatus, bookingStatus, queueNumber, refQueueNumber, userID,
   hospitalID, callback){
   try{
-  var tid = padding(hospitalID) + time.replace(/\s/g, '') + queueNumber;
   database.query("SELECT COUNT(*) AS PENDING_COUNT FROM Booking WHERE Booking_BookingStatus = 'PENDING' AND User_UserID = "+userID+"", function(err, pending){
     if(err) {console.log("Error happens in Booking.js addBooking() COUNT. " + err); return callback(0, null);}
     pending = JSON.parse(JSON.stringify(pending))[0].PENDING_COUNT;
     if (pending == 0)
         database.query("INSERT INTO Booking (Booking_TID, Booking_Time, Booking_QueueStatus,\
-        Booking_BookingStatus, Booking_QueueNumber, User_UserID, Hospital_HospitalID)\
-        VALUES ('"+tid+"', '"+time+"' , '"+queueStatus+"', '"+bookingStatus+"', '"+queueNumber+"',"+userID+", "+hospitalID+")", function(err, result){
+        Booking_BookingStatus, Booking_QueueNumber, Booking_ReferencedQueueNumber, User_UserID, Hospital_HospitalID)\
+        VALUES ('"+tid+"', '"+time+"' , '"+queueStatus+"', '"+bookingStatus+"', '"+queueNumber+"', '"+refQueueNumber+"',"+userID+", "+hospitalID+")", function(err, result){
         if(err){console.log("Error happens in Booking.js addBooking() INSERT. " + err); return callback(0, null);}
         return callback(1, tid);});
      else{
@@ -39,6 +38,17 @@ module.exports.queryPendingBooking = function(userid, callback){
 module.exports.updateQueueStatusToActive = function(tid, callback){ //The function only can run if the booking is not completed yet
   try{
   database.query("UPDATE booking SET Booking_QueueStatus = 'ACTIVE' WHERE Booking_TID = '"+tid+"' AND Booking_BookingStatus = 'PENDING'", function(err, result){
+  if(err) {console.log("Error happens in Booking.js updateQueueStatusToActive() UPDATE. " + err); return callback(0);};    //console.log(JSON.parse(JSON.stringify(result))[0].Booking_QueueNumber);
+  return callback(1);
+  });
+}catch(e){
+  console.log(e);
+}
+};
+
+module.exports.updateQueueStatusToReactivated = function(tid, callback){ //The function only can run if the booking is not completed yet
+  try{
+  database.query("UPDATE booking SET Booking_QueueStatus = 'REACTIVATED' WHERE Booking_TID = '"+tid+"' AND Booking_BookingStatus = 'PENDING'", function(err, result){
   if(err) {console.log("Error happens in Booking.js updateQueueStatusToActive() UPDATE. " + err); return callback(0);};    //console.log(JSON.parse(JSON.stringify(result))[0].Booking_QueueNumber);
   return callback(1);
   });
@@ -107,19 +117,5 @@ module.exports.queryAllBooking = function(userid, callback){
     }catch(e){
       console.log(e);
     }
-}
-
-function padding(n){
-    if(n>999){
-      return "" + n;
-    }
-    else if(n>99){
-      return "0" + n;
-    }
-    else if(n>9){
-        return "00" + n;
-    }
-    else
-        return "000" + n;
 }
 //function updateBookingStatus(){};
