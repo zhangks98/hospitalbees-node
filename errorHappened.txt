@@ -1,0 +1,91 @@
+--> Database error
+{ Error: connect ECONNREFUSED 127.0.0.1:8081
+    at Object._errnoException (util.js:1022:11)
+    at _exceptionWithHostPort (util.js:1044:20)
+    at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1182:14)
+  code: 'ECONNREFUSED',
+  errno: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 8081 }
+
+--> link error
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+
+        <title>Error</title>
+
+    </head>
+
+    <body>
+
+        <pre>Cannot POST /api/bookins/</pre>
+
+    </body>
+
+</html>
+
+--> get/post error
+<!DOCTYPE html>
+
+<html lang="en">
+
+
+    <head>
+
+        <meta charset="utf-8">
+
+        <title>Error</title>
+
+    </head>
+
+    <body>
+
+        <pre>Cannot POST /api/booking/5553333/BSChangeStatusToCompleted</pre>
+
+    </body>
+
+</html>
+
+--> Where the link is not correct
+TypeError: Cannot read property 'Hospital_QueueTail' of undefined
+    at C:\Programming School\Javascript\hospitalbee-node\REST.js:130:73
+    at C:\Programming School\Javascript\hospitalbee-node\Hospital.js:43:10
+    at Query._callback (C:\Programming School\Javascript\hospitalbee-node\Database.js:16:10)
+    at Query.Sequence.end (C:\Programming School\Javascript\hospitalbee-node\node_modules\mysql\lib\protocol\sequences\Sequence.js:88:24)
+    at Query._handleFinalResultPacket (C:\Programming School\Javascript\hospitalbee-node\node_modules\mysql\lib\protocol\sequences\Query.js:139:8)
+    at Query.EofPacket (C:\Programming School\Javascript\hospitalbee-node\node_modules\mysql\lib\protocol\sequences\Query.js:123:8)
+    at Protocol._parsePacket (C:\Programming School\Javascript\hospitalbee-node\node_modules\mysql\lib\protocol\Protocol.js:279:23)
+    at Parser.write (C:\Programming School\Javascript\hospitalbee-node\node_modules\mysql\lib\protocol\Parser.js:76:12)
+    at Protocol.write (C:\Programming School\Javascript\hospitalbee-node\node_modules\mysql\lib\protocol\Protocol.js:39:16)
+    at Socket.<anonymous> (C:\Programming School\Javascript\hospitalbee-node\node_modules\mysql\lib\Connection.js:103:28)
+
+OkPacket {
+  fieldCount: 0,
+  affectedRows: 0,
+  insertId: 0,
+  serverStatus: 2,
+  warningCount: 0,
+  message: '',
+  protocol41: true,
+  changedRows: 0 }
+
+--> Where the query that we want is not available
+OkPacket {
+  fieldCount: 0,
+  affectedRows: 0,
+  insertId: 0,
+  serverStatus: 34,
+  warningCount: 0,
+  message: '(Rows matched: 0  Changed: 0  Warnings: 0',
+  protocol41: true,
+  changedRows: 0 }
+
+-->where the query is empty
+[]
+undefined
