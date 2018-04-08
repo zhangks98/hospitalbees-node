@@ -293,7 +293,7 @@ router.route('/booking/:tid/BSUpdateToCancelled')
           });
 });
 
-router.route('/hospital')
+/*router.route('/hospital')
           .get(function(req, res) {
           hospital.queryOpenedHospital(function(err, result){
             if (err){
@@ -355,7 +355,7 @@ router.route('/hospital/:hospitalID/open')
             }
             res.json(htmlresponse.success(200, result, 'PUT /hospital/'+ req.params.hospitalID +'/open'));
     });
-});
+});*/
 // more routes for our API will happen here
 
 module.exports = {router};

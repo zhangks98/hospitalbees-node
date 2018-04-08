@@ -12,24 +12,31 @@ const morgan = require('morgan');
 const request = require('request');
 
 const database = require('./utils/Database');
-const {router} = require('./Routes')
+const {router} = require('./Routes');
+const HospitalConnector = require('./utils/HospitalConnector');
+
+
+const port = process.env.PORT || 3000;        // set our port
 // var Stopwatch = require('timer-stopwatch');
 var app = express();
 var server = http.createServer(app);
-var io = require('socket.io')(http);
+var io = require('socket.io')(server);
 
 // configure app to use bodyParser()
 // this will let us get the data from a POST
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(morgan('tiny'));
-
-var port = process.env.PORT || 3000;        // set our port
+app.use(morgan('dev'));
 
 // REGISTER OUR ROUTES -------------------------------
 
 // all of our routes will be prefixed with /api
 app.use('/api', router);
+
+// hospital io routes
+var hospitalIO = io.of('/hospital');
+HospitalConnector.connect(hospitalIO);
+
 
 // START THE SERVER
 // =============================================================================
