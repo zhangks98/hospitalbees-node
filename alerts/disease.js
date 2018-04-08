@@ -13,6 +13,7 @@ var database = mysql.createConnection({
 var allDisease = [];
 //console.log(getDifference("2018-W09","2018-W10"));
 var updateDisease = (callback) => {
+    allDisease = [];
     var finalDisease = [];
     Request.get({
         url: "https://data.gov.sg/api/action/datastore_search?resource_id=ef7e44f1-9b14-4680-a60a-37d2c9dda390&sort=epi_week desc, no._of_cases desc&limit=5",
@@ -69,6 +70,7 @@ var updateDisease = (callback) => {
                                 // return callback(1, 1);
                                 console.log("Has Difference");
                                 console.log(result);
+                                // TODO: allDisease.push(result);
                             })
                         }
                     }
@@ -82,7 +84,7 @@ var updateDisease = (callback) => {
                         var disease = finalDisease[new_rank];
                         var delta = 6;
                         var dnum = 100000;
-
+                        // TODO update the allDisease with the index of [new_rank] here
                         database.query("Update diseases set Week = '" + week + "', Disease_Name = '" + disease + "', No_of_cases = '" + new_num_of_cases + "', drank = '" + delta + "', dnum_of_cases = '" + dnum + "'Where ID = " + (new_rank + 1) + "", function (err, result) {
                             if (err) {
                                 console.log("Error happens in api.js changeDiseases INSERT. " + err);
@@ -152,6 +154,14 @@ function getDifference(a, b) {
     else {
         return 0;
     }
+}
+
+var getAllDisease = function() {
+  if (allDisease.length === 5) {
+    return allDisease;
+  } else {
+    // TODO return the current content in the database
+  }
 }
 
 var changeDiseases = function (database, week, callback) {

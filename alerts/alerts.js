@@ -56,10 +56,9 @@ module.exports.generateAlerts = function (callback) {
 }
 
 
-module.export.getAlerts = function (callback) {
-    console.log("Alerts:");
-    for (var cnt = 0; cnt < getArray.length; cnt++) {
-        console.log(cnt + 1 + ": " + getArray[cnt]);
+module.export.getAlerts = function () {
+    if (getArray.length > 0) {
+      return getArray;
     }
-    con.end();
+    con.end(); // how about the next connection?
 }
