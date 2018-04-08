@@ -1,4 +1,4 @@
-var database = require('./Database.js');
+const database = require('../utils/Database');
 
 module.exports.queryHospital = function(hospitalIPAddress, callback){
     try{

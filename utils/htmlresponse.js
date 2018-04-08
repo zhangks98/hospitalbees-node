@@ -1,4 +1,4 @@
-var time = require('./Time.js');
+var time = require('./Time');
 module.exports.error = function(err, source){
   if (err == 'BADREQUEST')
     return ({

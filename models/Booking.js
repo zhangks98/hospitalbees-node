@@ -1,4 +1,4 @@
-var database = require('./Database.js');
+const database = require('../utils/Database');
 
 module.exports.addBooking = function(time, queueStatus, bookingStatus, queueNumber, refQueueNumber, userID,
   hospitalID, callback){

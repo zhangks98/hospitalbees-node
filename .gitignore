@@ -57,3 +57,11 @@ typings/
 # dotenv environment variables file
 .env
 
+# OS Files #
+Thumbs.db
+desktop.ini
+.DS_Store
+.Spotlight-V100
+.Trashes
+._*
+

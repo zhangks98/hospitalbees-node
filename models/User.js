@@ -1,4 +1,4 @@
-var database = require('./Database.js');
+const database = require('../utils/Database');
 
 module.exports.addUser = function(nric, name, password, phoneNumber, callback){
     try{
