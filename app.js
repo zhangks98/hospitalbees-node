@@ -43,7 +43,7 @@ HospitalConnector.connect(hospitalIO);
 server.listen(port, () => {
   console.log('Magic happens on port ' + port);
 });
-//database.starts();
+database.starts();
 
 //OTHER FUNCTIONS
 // let timer = new Stopwatch(6000);
