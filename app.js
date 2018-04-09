@@ -12,8 +12,15 @@ const morgan = require('morgan');
 const request = require('request');
 
 const database = require('./utils/Database');
-const {router} = require('./Routes');
-const HospitalConnector = require('./utils/HospitalConnector');
+
+// RESTful API Routes 
+const index = require('./routes/index');
+const user = require('./routes/user');
+const booking = require('./routes/booking');
+
+// Socket.IO
+const HospitalSocket = require('./sockets/HospitalSocket');
+const UserSocket = require('./sockets/UserSocket');
 
 
 const port = process.env.PORT || 3000;        // set our port
@@ -31,11 +38,15 @@ app.use(morgan('dev'));
 // REGISTER OUR ROUTES -------------------------------
 
 // all of our routes will be prefixed with /api
-app.use('/api', router);
+app.use('/api', index);
+app.use('/api/user', user);
+app.use('/api/booking', booking);
 
-// hospital io routes
+// hospital io
 var hospitalIO = io.of('/hospital');
-HospitalConnector.connect(hospitalIO);
+HospitalSocket.connect(hospitalIO);
+var userIO = io.of('/user');
+
 
 
 // START THE SERVER
