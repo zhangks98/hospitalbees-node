@@ -6,7 +6,7 @@ function addUser(socketId, userId) {
 	return user;
 }
 
-function removeUser (socketId) {
+function removeUser(socketId) {
 	var user = getUserBySocketId(socketId);
 	if (user) {
 		userList = userList.filter((user) => user.socketId !== socketId);

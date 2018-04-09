@@ -32,13 +32,13 @@ var connect = (io) => {
 		let name = socket.handshake.query.name;
 		let hospital = getHospitalByHospitalId(hospitalId);
 		if (hospital) {
-			if(hospital.name === name) {
+			if (hospital.name === name) {
 				let index = hospitalList.findIndex((hospital) => hospital.hospitalId === hospitalId)
 				hospitalList[index].socketId = socket.id;
 				console.log(`${name} [${hospitalId}] is reconnected`);
 				return next();
 			} else
-			return next(new Error(`hospital id [${hospitalId}] and name does not match`))
+				return next(new Error(`hospital id [${hospitalId}] and name does not match`))
 		} else {
 			addHospital(socket.id, hospitalId, name);
 			console.log(`${name} [${hospitalId}] is connected`);
@@ -54,7 +54,7 @@ var connect = (io) => {
 
 		socket.on('handshake', () => {
 			// stub
-		})
+		});
 	});
 };
 
