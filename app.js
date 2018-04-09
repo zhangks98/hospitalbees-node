@@ -17,10 +17,12 @@ const database = require('./utils/Database');
 const index = require('./routes/index');
 const user = require('./routes/user');
 const booking = require('./routes/booking');
+const hospital = require('./routes/hospital');
 
 // Socket.IO
-const HospitalSocket = require('./sockets/HospitalSocket');
-const UserSocket = require('./sockets/UserSocket');
+const hospitalSocket = require('./sockets/HospitalSocket');
+const userSocket = require('./sockets/UserSocket');
+const hospitalIO = require('./models/HospitalIO');
 
 
 const port = process.env.PORT || 3000;        // set our port
@@ -30,7 +32,7 @@ var io = require('socket.io')(server);
 
 // configure app to use bodyParser()
 // this will let us get the data from a POST
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 app.use(morgan('dev'));
 
@@ -40,15 +42,18 @@ app.use(morgan('dev'));
 app.use('/api', index);
 app.use('/api/user', user);
 app.use('/api/booking', booking);
+app.use('/api/hospital', hospital);
 
 // hospital io
-var hospitalIO = io.of('/hospital');
-HospitalSocket.connect(hospitalIO);
-var userIO = io.of('/user');
+var hospitalNamespace = io.of('/hospital');
+hospitalSocket.connect(hospitalNamespace);
+hospitalIO.setSocket(hospitalNamespace);
+var userNamespace = io.of('/user');
+userSocket.connect(userNamespace);
 
 // START THE SERVER
 // =============================================================================
 server.listen(port, () => {
-  console.log('Magic happens on port ' + port);
+	console.log('Magic happens on port ' + port);
 });
 database.starts();
