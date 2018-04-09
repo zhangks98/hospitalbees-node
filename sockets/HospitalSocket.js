@@ -1,46 +1,62 @@
-class Hospitals {
-	constructor() {
-		this.hospitals = [];
-	}
+var hospitalList = [];
 
-	addHospital(socketId, hospitalId, name) {
-		var hospital = {socketId, hospitalId, name};
-		this.hospitals.push(hospital);
-		return hospital;
-	}
-
-	getHospitalByHospitalId (hospitalId) {
-		return this.hospitals.filter((hospital) => hospital.hospitalId === hospitalId)[0];
-	}
-
-	getHospitalBySocketId (socketId) {
-		return this.hospitals.filter((hospital) => hospital.socketId === socketId)[0];
-	}
-
-	removeHospital (socketId) {
-		var hospital = this.getHospitalBySocketId(socketId);
-		if (hospital) {
-			this.hospitals = this.hospitals.filter((hospital) => hospital.socketId !== socketId);
-		}
-		return hospital;
-	}
+var addHospital = (socketId, hospitalId, name) => {
+	var hospital = {socketId, hospitalId, name};
+	hospitalList.push(hospital);
+	return hospital;
 }
 
-var hospitals = new Hospitals();
-var connect = (io) => {
-	io.on('connection', (socket) => {
-  		socket.on('handshake', (hospitalDetails, callback) => {
-  			hospitals.removeHospital(socket.id);
-			hospitals.addHospital(socket.id, hospitalDetails.hospitalId, hospitalDetails.name);
-			console.log(`${hospitalDetails.name} [${hospitalDetails.hospitalId}] is connected`);
-		});
+var getHospitalBySocketId = (socketId) => {
+	return hospitalList.filter((hospital) => hospital.socketId === socketId)[0];
+}
 
+var getHospitalByHospitalId = (hospitalId) => {
+	return hospitalList.filter((hospital) => hospital.hospitalId === hospitalId)[0];
+}
+
+var removeHospital = (socketId) => {
+	var hospital = getHospitalBySocketId(socketId);
+	if (hospital) {
+		hospitalList = hospitalList.filter((hospital) => hospital.socketId !== socketId);
+	}
+	return hospital;
+}
+
+var getOpenedHospitals = () => {
+	return hospitalList.map((hospital) => ({hospitalId: hospital.hospitalId, name: hospital.name}));
+}
+
+var connect = (io) => {
+	io.use((socket, next) => {
+		let hospitalId = socket.handshake.query.hospitalId;
+		let name = socket.handshake.query.name;
+		let hospital = getHospitalByHospitalId(hospitalId);
+		if (hospital) {
+			if(hospital.name === name) {
+				let index = hospitalList.findIndex((hospital) => hospital.hospitalId === hospitalId)
+				hospitalList[index].socketId = socket.id;
+				console.log(`${name} [${hospitalId}] is reconnected`);
+				return next();
+			} else
+			return next(new Error(`hospital id [${hospitalId}] and name does not match`))
+		} else {
+			addHospital(socket.id, hospitalId, name);
+			console.log(`${name} [${hospitalId}] is connected`);
+			return next();
+		}
+	});
+
+	io.on('connection', (socket) => {
 		socket.on('disconnect', () => {
-			var hospital = hospitals.removeHospital(socket.id);
+			var hospital = removeHospital(socket.id);
 			console.log(`${hospital.name} [${hospital.hospitalId}] is disconnected`);
 		});
-	});
-}
 
-module.exports = {connect, hospitals}
+		socket.on('handshake', () => {
+			// stub
+		})
+	});
+};
+
+module.exports = {connect, getOpenedHospitals, getHospitalByHospitalId}
 

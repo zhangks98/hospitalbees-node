@@ -1,3 +1,4 @@
+// TODO refactor using momentjs
 module.exports.getCurrentTime = function() {
 
     var date = new Date();

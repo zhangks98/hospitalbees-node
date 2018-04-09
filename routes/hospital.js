@@ -1,5 +1,6 @@
 const express = require('express');
 const hospital = require('../models/Hospital');
+const hospitalIO = require('../sockets/HospitalSocket')
 const booking = require('../models/Booking');
 const htmlresponse = require('../utils/htmlresponse');
 

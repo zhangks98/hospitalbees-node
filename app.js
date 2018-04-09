@@ -24,7 +24,6 @@ const UserSocket = require('./sockets/UserSocket');
 
 
 const port = process.env.PORT || 3000;        // set our port
-// var Stopwatch = require('timer-stopwatch');
 var app = express();
 var server = http.createServer(app);
 var io = require('socket.io')(server);
@@ -47,23 +46,9 @@ var hospitalIO = io.of('/hospital');
 HospitalSocket.connect(hospitalIO);
 var userIO = io.of('/user');
 
-
-
 // START THE SERVER
 // =============================================================================
 server.listen(port, () => {
   console.log('Magic happens on port ' + port);
 });
 database.starts();
-
-//OTHER FUNCTIONS
-// let timer = new Stopwatch(6000);
-// timer.onDone(function(){
-//   booking.updateBookingStatusesToAbsent(req.params.hospitalID, function(err2, result2){
-//     if (err2){
-//         res.json(htmlresponse.error(err2, 'PUT /hospital/'+ req.params.hospitalID +'/close' ));
-//         return;
-//       }
-//     res.json(htmlresponse.success(200, result, 'PUT /hospital/'+ req.params.hospitalID +'/close'));
-//   });
-// });
