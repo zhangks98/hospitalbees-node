@@ -9,19 +9,19 @@ const htmlresponse = require('../utils/htmlresponse');
 var router = express.Router();              // get an instance of the express Router
 //==============================================================================
 
-router.route('/:tid/pending')
+router.route('/:tid')
           .get(function(req, res) {
           //var userid = parseInt(req.params.userid, 10);
           var tid = req.params.tid;
           booking.queryPendingBooking(tid, function(err, result){
             if (err){
                 res.status(500);
-                res.json(htmlresponse.error(err, 'GET /booking/'+ tid + '/pending'));
+                res.json(htmlresponse.error(err, 'GET /booking/'+ tid));
                 return;
               }
             if(result != null && result.affectedRows == 0){
               res.status(404);
-              res.json(htmlresponse.error('NOTFOUND', 'GET /booking' + tid + '/pending'));
+              res.json(htmlresponse.error('NOTFOUND', 'GET /booking' + tid));
               return;
             }
               res.json(result);

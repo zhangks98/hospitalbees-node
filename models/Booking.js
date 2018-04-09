@@ -29,9 +29,9 @@ module.exports.addBooking = function(time, queueStatus, bookingStatus, queueNumb
     }
 };
 
-module.exports.queryPendingBooking = function(userid, callback){
+module.exports.queryPendingBooking = function(tid, callback){
   try{
-  database.query("SELECT * FROM Booking WHERE User_UserID = '"+userid+"' AND Booking_BookingStatus = 'PENDING'", function(err, bookingdata){
+  database.query("SELECT * FROM Booking WHERE Booking_TID = '"+tid+"' AND Booking_BookingStatus = 'PENDING'", function(err, bookingdata){
   if(err) {console.log("Error happens in Booking.js queryPendingBooking() SELECT. " + err); return callback(err, null);}
   else{
   bookingdata = JSON.parse(JSON.stringify(bookingdata))[0];

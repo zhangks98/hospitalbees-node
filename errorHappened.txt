@@ -1,3 +1,15 @@
+Query Booking
+{
+    "Booking_BookingID": 8,
+    "Booking_TID": "222018-03-30 23:23:432020",
+    "Booking_Time": "2018-03-30T15:23:43.000Z",
+    "Booking_QueueStatus": "INACTIVE",
+    "Booking_BookingStatus": "PENDING",
+    "Booking_QueueNumber": "2020",
+    "Booking_ReferencedQueueNumber": null,
+    "User_UserID": 2,
+    "Hospital_HospitalID": 2
+}
 --> Database error
 { Error: connect ECONNREFUSED 127.0.0.1:8081
     at Object._errnoException (util.js:1022:11)
