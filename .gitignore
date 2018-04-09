@@ -57,6 +57,11 @@ typings/
 # dotenv environment variables file
 .env
 
+# Intellij
+.idea/
+*.iml
+*.iws
+
 # OS Files #
 Thumbs.db
 desktop.ini
