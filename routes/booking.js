@@ -6,6 +6,8 @@ const hospitalIO = require('../models/HospitalIO');
 const htmlresponse = require('../utils/htmlresponse');
 const moment = require('moment');
 
+const waitingTimePerPerson = 5;
+const defaultETA = 20;
 // BOOKING ROUTES FOR OUR API
 // =============================================================================
 var router = express.Router();              // get an instance of the express Router
@@ -75,21 +77,20 @@ router.route('/')
 							return;
 						}
 					});
-					hospitalIO.getQueueTail((err, tailQueueElement) => {
+					hospitalIO.getQueueTail(hospitalID, (err, tailQueueElement) => {
 						if (err) {
 							res.status(500);
-							res.json(htmlresponse.error(err, 'POST /booking'));
+							res.json(htmlresponse.error(err, 'Get Queue Tail'));
 							return;
 						}
-						//console.log(body);
 						const queueNumber = Number(queueNumber.Hospital_QueueTail);
 						const refQueueNumber = tailQueueElement.queueNumber;
-						const  = moment().utc().format();
+						const queueLength = tailQueueElement.queueLength;
+						const time = moment().utc().format();
 						const queueStatus = 'INACTIVE';
 						const bookingStatus = 'PENDING';
-						//TODO calculate hospital queue waiting
-						let totalEta = eta + someWaiting;
-						booking.addBooking(, totalEta, queueStatus, bookingStatus, queueNumber, refQueueNumber, userID,
+						let totalEta = Math.max(eta + queueLength * waitingTimePerPerson, defaultETA);
+						booking.addBooking(time, totalEta, queueStatus, bookingStatus, queueNumber, refQueueNumber, userID,
 							hospitalID, function (err3, tid) {
 								if (err3) {
 									res.status(500);
@@ -98,6 +99,7 @@ router.route('/')
 								}
 								res.status(201).json({"tid": tid});
 							});
+
 					});
 				}
 			});

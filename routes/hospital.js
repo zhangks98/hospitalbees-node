@@ -57,12 +57,23 @@ router.route('/:hospitalID/:queueNumber/length')
 		});
 	});
 
-router.route('/:hospitalID/BSUpdateAllToAbsent')
+router.route('/:hospitalID/close')
 	          .put(function(req, res) {
-	          var tid = Number(req.params.hospitalID);
-	          booking.updateAllBookingStatusesToAbsent(tid, function(err, result){
-	              if(!err)res.send("ABSENT");
-	          });
+	    const hospitalId = req.params.hospitalID;
+		const TAG = 'PUT /hospital/' + hospitalId + '/close';
+        booking.updateAllBookingStatusesToAbsent(Number(hospitalId), (err, result) => {
+            if (err) {
+				res.status(500).json(htmlresponse.error(err, TAG));
+				return;
+			}
+        });
+        hospital.closeHospital(hospitalId, (err, result) => {
+        	if (err) {
+				res.status(500).json(htmlresponse.error(err, TAG));
+				return;
+			}
+        });
+		res.status(200);
 	});
 
 module.exports = router;
