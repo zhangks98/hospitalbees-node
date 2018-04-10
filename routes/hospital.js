@@ -57,4 +57,12 @@ router.route('/:hospitalID/:queueNumber/length')
 		});
 	});
 
+router.route('/:hospitalID/BSUpdateAllToAbsent')
+	          .put(function(req, res) {
+	          var tid = Number(req.params.hospitalID);
+	          booking.updateAllBookingStatusesToAbsent(tid, function(err, result){
+	              if(!err)res.send("ABSENT");
+	          });
+	});
+
 module.exports = router;

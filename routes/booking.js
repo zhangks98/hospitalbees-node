@@ -50,8 +50,10 @@ router.route('/:userid/history')
 
 router.route('/')
 	.post(function (req, res) {
-		var hospitalID = req.body.hospitalID;
-		var userID = req.body.userID;
+		const hospitalID = Number(req.body.hospitalID);
+		const userID = req.body.userID;
+		const eta = Number(req.body.eta);
+
 		user.userAuthentication(userID, function (err0, result) {
 			if (err0) {
 				res.status(403).json(htmlresponse.error('FORBIDDEN', 'POST /booking'));
@@ -80,12 +82,14 @@ router.route('/')
 							return;
 						}
 						//console.log(body);
-						const queueNumber = queueNumber.Hospital_QueueTail;
+						const queueNumber = Number(queueNumber.Hospital_QueueTail);
 						const refQueueNumber = tailQueueElement.queueNumber;
-						const time = moment().utc().format();
+						const  = moment().utc().format();
 						const queueStatus = 'INACTIVE';
 						const bookingStatus = 'PENDING';
-						booking.addBooking(time, queueStatus, bookingStatus, queueNumber, refQueueNumber, userID,
+						//TODO calculate hospital queue waiting
+						let totalEta = eta + someWaiting;
+						booking.addBooking(, totalEta, queueStatus, bookingStatus, queueNumber, refQueueNumber, userID,
 							hospitalID, function (err3, tid) {
 								if (err3) {
 									res.status(500);
@@ -149,11 +153,6 @@ router.route('/:tid/QSUpdateToReactivated')
 				return;
 			}
 			res.json(htmlresponse.success(200, result, 'PUT /booking' + tid + '/QSUpdateToReactivated'));
-			// timer.start();
-
-// timer.onTime(function(time) {
-//     //console.log(time.ms); // number of milliseconds past (or remaining);
-// });
 		});
 	});
 
@@ -174,14 +173,25 @@ router.route('/:tid/BSUpdateToCompleted')
 			res.json(htmlresponse.success(200, result, 'PUT /booking' + tid + '/BSUpdateToCompleted'));
 		});
 	});
-/*router.route('/:hospitalID/BSUpdateAllToAbsent')
-          .put(function(req, res) {
-          var tid = parseInt(req.params.hospitalID, 10);
-          booking.updateAllBookingStatusesToAbsent(tid, function(err, result){
-              if(!err)res.send("ABSENT");
-          });
-});
-*/
+
+	router.route('/:tid/BSUpdateToAbsent')
+		.put(function (req, res) {
+			var tid = req.params.tid;
+			booking.updateBookingStatusToAbsent(tid, function (err, result) {
+				if (err) {
+					res.status(500);
+					res.json(htmlresponse.error(err, 'PUT /booking/' + tid + '/BSUpdateToAbsent'));
+					return;
+				}
+				if (result != null && result.affectedRows === 0) {
+					res.status(404);
+					res.json(htmlresponse.error('NOTFOUND', 'PUT /booking' + tid + '/BSUpdateToAbsent'));
+					return;
+				}
+				res.json(htmlresponse.success(200, result, 'PUT /booking' + tid + '/BSUpdateToAbsent'));
+			});
+		});
+
 router.route('/:tid/BSUpdateToCancelled')
 	.put(function (req, res) {
 		var tid = req.params.tid;

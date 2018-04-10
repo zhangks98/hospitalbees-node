@@ -1,10 +1,10 @@
 const database = require('../utils/Database');
 
-module.exports.addBooking = function(time, queueStatus, bookingStatus, queueNumber, refQueueNumber, userID,
+module.exports.addBooking = function(time, eta, queueStatus, bookingStatus, queueNumber, refQueueNumber, userID,
   hospitalID, callback){
   try{
     console.log(queueNumber);
-    if((userID == undefined) || ( time == undefined) || (userID == undefined) || (hospitalID == undefined) || queueNumber == undefined){
+    if((userID == undefined) || ( eta == undefined) || (userID == undefined) || (hospitalID == undefined) || queueNumber == undefined){
     return callback('BADREQUEST', null);
   }
   database.query("SELECT COUNT(*) AS PENDING_COUNT FROM Booking WHERE Booking_BookingStatus = 'PENDING' AND User_UserID = "+userID+"", function(errcount, pending){
@@ -12,10 +12,10 @@ module.exports.addBooking = function(time, queueStatus, bookingStatus, queueNumb
     if(pending.length == 0 || pending == undefined) return callback('NOTFOUND', null);
     pending = JSON.parse(JSON.stringify(pending))[0].PENDING_COUNT;
     if (pending == 0){
-      var tid = padding(hospitalID) + time.replace(/\s/g, 'T') + padding(queueNumber);
-        database.query("INSERT INTO Booking (Booking_TID, Booking_Time, Booking_QueueStatus,\
+      var tid = padding(hospitalID) + time + padding(queueNumber);
+        database.query("INSERT INTO Booking (Booking_TID, Booking_ETA, Booking_QueueStatus,\
         Booking_BookingStatus, Booking_QueueNumber, Booking_ReferencedQueueNumber, User_UserID, Hospital_HospitalID)\
-        VALUES ('"+tid+"', '"+time+"' , '"+queueStatus+"', '"+bookingStatus+"', '"+ padding(queueNumber)+"', '"+refQueueNumber+"',"+userID+", "+hospitalID+")", function(errinsert, result){
+        VALUES ('"+tid+"', '"+eta+"' , '"+queueStatus+"', '"+bookingStatus+"', '"+ padding(queueNumber)+"', '"+refQueueNumber+"',"+userID+", "+hospitalID+")", function(errinsert, result){
         if(errinsert){console.log("Error happens in Booking.js addBooking() INSERT. " + errinsert); return callback(errinsert, null);}
         result = JSON.parse(JSON.stringify(result));
         return callback(null, tid);});
@@ -31,7 +31,7 @@ module.exports.addBooking = function(time, queueStatus, bookingStatus, queueNumb
 
 module.exports.queryPendingBooking = function(tid, callback){
   try{
-  database.query("SELECT * FROM Booking WHERE Booking_TID = '"+tid+"' AND Booking_BookingStatus = 'PENDING'", function(err, bookingdata){
+  database.query("SELECT * FROM Booking WHERE Booking_TID = '"+tid+"'", function(err, bookingdata){
   if(err) {console.log("Error happens in Booking.js queryPendingBooking() SELECT. " + err); return callback(err, null);}
   else{
   bookingdata = JSON.parse(JSON.stringify(bookingdata))[0];
@@ -89,6 +89,18 @@ module.exports.updateBookingStatusToCompleted = function(tid, callback){
   } catch(e){
       return callback(e, null);
     }
+};
+
+module.exports.updateBookingStatusToAbsent = function(tid, callback){
+  try{
+  database.query("UPDATE booking SET Booking_BookingStatus = 'ABSENT', Booking_QueueStatus = 'FINISHED' WHERE Booking_TID = '"+tid+"' AND Booking_BookingStatus = 'PENDING'", function(err, result){
+  if(err) {console.log("Error happens in Booking.js updateBookingStatusToAbsent() UPDATE. " + err); return callback(err, null);};    //console.log(JSON.parse(JSON.stringify(result))[0].Booking_QueueNumber);
+  result = JSON.parse(JSON.stringify(result));
+  return callback(null, result);    //console.log(JSON.parse(JSON.stringify(result))[0].Booking_QueueNumber);
+  });
+}catch(e){
+  return callback(e, null);
+}
 };
 
 module.exports.updateAllBookingStatusesToAbsent = function(hospitalID, callback){
