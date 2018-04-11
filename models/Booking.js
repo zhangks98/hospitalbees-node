@@ -35,8 +35,7 @@ module.exports.queryPendingBooking = function(tid, callback){
   if(err) {console.log("Error happens in Booking.js queryPendingBooking() SELECT. " + err); return callback(err, null);}
   else{
   bookingdata = JSON.parse(JSON.stringify(bookingdata))[0];
-    if(bookingdata == undefined) return callback('NOTFOUND', null);
-  return callback(null,bookingdata);
+    return callback(undefined,bookingdata);
       }});
     }catch(e){
       return callback(e, null);
