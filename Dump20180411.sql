@@ -89,13 +89,11 @@ DROP TABLE IF EXISTS `user`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `user` (
   `User_UserID` int(11) NOT NULL AUTO_INCREMENT,
-  `User_NRIC` varchar(9) NOT NULL,
   `User_Name` varchar(45) DEFAULT NULL,
-  `User_Password` varchar(45) NOT NULL,
+  `User_FCMToken` varchar(100) NOT NULL,
   `User_BlockedStatus` tinyint(1) DEFAULT '0',
   `User_PhoneNumber` varchar(45) DEFAULT NULL,
-  PRIMARY KEY (`User_UserID`),
-  UNIQUE KEY `NRIC_UNIQUE` (`User_NRIC`)
+  PRIMARY KEY (`User_UserID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -105,7 +103,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'S0000001G','Yusuf Bin Ishak','ilovesingapore',0,'90908080'),(2,'12345','Sir Raffless','bbbb',0,'42576543'),(3,'a','Chong Yong Kim','ckckcabc',0,'77766689');
+INSERT INTO `user` VALUES (1,'Yusuf Bin Ishak','ilovesingapore',0,'90908080'),(2,'Sir Raffless','bbbb',0,'42576543'),(3,'Chong Yong Kim','ckckcabc',0,'77766689');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -118,4 +116,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-04-11 18:10:03
+-- Dump completed on 2018-04-11 22:02:08
