@@ -66,14 +66,14 @@ router.route('/:hospitalID/close')
 				res.status(500).json(htmlresponse.error(err, TAG));
 				return;
 			}
+			hospital.closeHospital(hospitalId, (err, result) => {
+	        	if (err) {
+					res.status(500).json(htmlresponse.error(err, TAG));
+					return;
+				}
+				res.status(200).json();
+        	});
         });
-        hospital.closeHospital(hospitalId, (err, result) => {
-        	if (err) {
-				res.status(500).json(htmlresponse.error(err, TAG));
-				return;
-			}
-        });
-		res.status(200);
 	});
 
 module.exports = router;

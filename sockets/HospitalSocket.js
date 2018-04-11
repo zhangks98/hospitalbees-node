@@ -28,7 +28,7 @@ var getOpenedHospitals = () => {
 
 var connect = (io) => {
 	io.use((socket, next) => {
-		let hospitalId = socket.handshake.query.hospitalId;
+		let hospitalId = Number(socket.handshake.query.hospitalId);
 		let name = socket.handshake.query.name;
 		let hospital = getHospitalByHospitalId(hospitalId);
 		if (hospital) {

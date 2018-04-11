@@ -1,11 +1,8 @@
 var mysql = require('mysql');
-module.exports.starts = function(){
-global.pool = mysql.createPool({
-      host: "localhost",
-      user: "hospitalBees",
-      password: "hospitalbees",
-      database: "applicationdatabase"
-    });
+var secrets = require('../secrets')
+module.exports.starts = function(callback) {
+  global.pool = mysql.createPool(secrets.sql);
+  typeof callback === 'function' && callback();
 };
 
 module.exports.query = function(queries, callback){

@@ -70,3 +70,6 @@ desktop.ini
 .Trashes
 ._*
 
+# Secerets #
+secrets.js
+

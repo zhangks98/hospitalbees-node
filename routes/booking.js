@@ -83,14 +83,14 @@ router.route('/')
 							res.json(htmlresponse.error(err, 'Get Queue Tail'));
 							return;
 						}
-						const queueNumber = Number(queueNumber.Hospital_QueueTail);
+						const qNumber = Number(queueNumber.Hospital_QueueTail);
 						const refQueueNumber = tailQueueElement.queueNumber;
 						const queueLength = tailQueueElement.queueLength;
 						const time = moment().utc().format();
 						const queueStatus = 'INACTIVE';
 						const bookingStatus = 'PENDING';
 						let totalEta = Math.max(eta + queueLength * waitingTimePerPerson, defaultETA);
-						booking.addBooking(time, totalEta, queueStatus, bookingStatus, queueNumber, refQueueNumber, userID,
+						booking.addBooking(time, totalEta, queueStatus, bookingStatus, qNumber, refQueueNumber, userID,
 							hospitalID, function (err3, tid) {
 								if (err3) {
 									res.status(500);
