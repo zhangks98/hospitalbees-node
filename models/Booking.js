@@ -3,7 +3,6 @@ const database = require('../utils/Database');
 module.exports.addBooking = function(time, eta, queueStatus, bookingStatus, queueNumber, refQueueNumber, userID,
   hospitalID, callback){
   try{
-    console.log(queueNumber);
     if((userID == undefined) || ( eta == undefined) || (userID == undefined) || (hospitalID == undefined) || queueNumber == undefined){
     return callback('BADREQUEST', null);
   }
