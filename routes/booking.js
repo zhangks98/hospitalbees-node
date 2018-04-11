@@ -17,16 +17,13 @@ router.route('/:tid')
 	.get(function (req, res) {
 		//var userid = parseInt(req.params.userid, 10);
 		var tid = req.params.tid;
+		const TAG = 'GET /booking/' + tid;
 		booking.queryPendingBooking(tid, function (err, result) {
 			if (err) {
-				res.status(500);
-				res.json(htmlresponse.error(err, 'GET /booking/' + tid));
-				return;
+				return res.status(500).json(htmlresponse.error(err, TAG));
 			}
-			if (result != null && result.affectedRows === 0) {
-				res.status(404);
-				res.json(htmlresponse.error('NOTFOUND', 'GET /booking' + tid));
-				return;
+			if (!result || result && result.affectedRows === 0) {
+				return res.status(404).json(htmlresponse.error('NOTFOUND', TAG));
 			}
 			res.json(result);
 		});
@@ -80,7 +77,7 @@ router.route('/')
 					hospitalIO.getQueueTail(hospitalID, (err, tailQueueElement) => {
 						if (err) {
 							res.status(500);
-							res.json(htmlresponse.error(err, 'Get Queue Tail'));
+							res.json(htmlresponse.error(err, 'socketIO: getQueueTail'));
 							return;
 						}
 						const qNumber = Number(queueNumber.Hospital_QueueTail);

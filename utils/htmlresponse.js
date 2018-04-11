@@ -33,14 +33,16 @@ module.exports.error = function(err, source){
     "message": "No message available",
     "path": source
 });
-  else
+  else {
+    console.error(source, err);
     return({
     "timestamp": moment().utc().format(),
     "status": 500,
     "error": "Internal Server Error",
     "message": err,
     "path": null
-});
+    });
+  }
 };
 module.exports.success = function(request, message, path){
   if(request === 200)
