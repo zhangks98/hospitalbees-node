@@ -28,10 +28,10 @@ module.exports.addBooking = function(time, eta, queueStatus, bookingStatus, queu
     }
 };
 
-module.exports.queryPendingBooking = function(tid, callback){
+module.exports.queryBooking = function(tid, callback){
   try{
   database.query("SELECT * FROM Booking WHERE Booking_TID = '"+tid+"'", function(err, bookingdata){
-  if(err) {console.log("Error happens in Booking.js queryPendingBooking() SELECT. " + err); return callback(err, null);}
+  if(err) {console.log("Error happens in Booking.js queryBooking() SELECT. " + err); return callback(err, null);}
   else{
   bookingdata = JSON.parse(JSON.stringify(bookingdata))[0];
     return callback(undefined,bookingdata);
@@ -131,7 +131,7 @@ module.exports.queryAllBooking = function(userid, callback){
     if(err){console.log("Error happens in Booking.js queryAllBooking() COUNT. " + err); return callback(err, null, null);}
     total = JSON.parse(JSON.stringify(total))[0].TOTAL;
   database.query("SELECT * FROM Booking WHERE User_UserID = '"+userid+"'", function(err, bookingdata){
-  if(err) {console.log("Error happens in Booking.js queryPendingBooking() SELECT. " + err); return callback(err, null, null);}
+  if(err) {console.log("Error happens in Booking.js queryBooking() SELECT. " + err); return callback(err, null, null);}
   else{
   if(bookingdata.length == 0 || bookingdata == undefined) return callback('NOTFOUND', null);
   bookingdata = (JSON.parse(JSON.stringify(bookingdata)));
