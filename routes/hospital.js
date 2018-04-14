@@ -24,7 +24,8 @@ router.route('/')
 router.route('/:hospitalID/tail')
 .get((req, res) => {
   const TAG = 'GET /hospital/' + req.params.hospitalID + '/tail';
-    hospitalIO.getQueueTail(req.params.hospitalID, function (err, result) {
+
+    hospitalIO.getQueueTail(Number(req.params.hospitalID), function (err, result) {
       if (err) {
         res.status(500).json(htmlresponse.error(err, TAG));
         return;
@@ -36,7 +37,7 @@ router.route('/:hospitalID/tail')
 router.route('/:hospitalID/length')
 	.get(function (req, res) {
 		const TAG = 'GET /hospital/' + req.params.hospitalID + '/length';
-		hospitalIO.getQueueLength(req.params.hospitalID, function (err, result) {
+		hospitalIO.getQueueLength(Number(req.params.hospitalID), function (err, result) {
 			if (err) {
 				res.status(500).json(htmlresponse.error(err, TAG));
 				return;
@@ -48,7 +49,7 @@ router.route('/:hospitalID/length')
 router.route('/:hospitalID/:queueNumber/length')
 	.get(function (req, res) {
 		const TAG = 'GET /hospital/' + req.params.hospitalID + '/' + req.params.queueNumber + '/length';
-		hospitalIO.getQueueLengthFrom(req.params.hospitalID, req.params.queueNumber, function (err, result) {
+		hospitalIO.getQueueLengthFrom(Number(req.params.hospitalID), req.params.queueNumber, function (err, result) {
 			if (err) {
 				res.status(500).json(htmlresponse.error(err, TAG));
 				return;
