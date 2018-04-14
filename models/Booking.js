@@ -1,22 +1,22 @@
 const database = require('../utils/Database');
 
-module.exports.addBooking = function(time, eta, queueStatus, bookingStatus, queueNumber, refQueueNumber, userID,
+module.exports.addBooking = function(time, eta, queueStatus, bookingStatus, queueNumber, refQueueNumber, userPhoneNumber,
   hospitalID, callback){
   try{
-    if((userID == undefined) || ( eta == undefined) || (userID == undefined) || (hospitalID == undefined) || queueNumber == undefined){
+    if((userPhoneNumber === undefined) || ( eta === undefined) || (hospitalID === undefined) || queueNumber === undefined){
     return callback('BADREQUEST', null);
   }
-  database.query("SELECT COUNT(*) AS PENDING_COUNT FROM Booking WHERE Booking_BookingStatus = 'PENDING' AND User_UserID = "+userID+"", function(errcount, pending){
+  database.query("SELECT COUNT(*) AS PENDING_COUNT FROM Booking WHERE Booking_BookingStatus = 'PENDING' AND User_PhoneNumber = "+userPhoneNumber+"", function(errcount, pending){
     if(errcount) {console.log("Error happens in Booking.js addBooking() COUNT" + errcount); return callback(errcount, null);}
-    if(pending.length == 0 || pending == undefined) return callback('NOTFOUND', null);
+    if(pending.length === 0 || pending === undefined) return callback('NOTFOUND', null);
     pending = JSON.parse(JSON.stringify(pending))[0].PENDING_COUNT;
-    if (pending == 0){
+    if (pending === 0){
       var tid = padding(hospitalID) + time + padding(queueNumber);
         database.query("INSERT INTO Booking (Booking_TID, Booking_ETA, Booking_QueueStatus,\
-        Booking_BookingStatus, Booking_QueueNumber, Booking_ReferencedQueueNumber, User_UserID, Hospital_HospitalID)\
-        VALUES ('"+tid+"', '"+eta+"' , '"+queueStatus+"', '"+bookingStatus+"', '"+ padding(queueNumber)+"', '"+refQueueNumber+"',"+userID+", "+hospitalID+")", function(errinsert, result){
+        Booking_BookingStatus, Booking_QueueNumber, Booking_ReferencedQueueNumber, User_UserPhoneNumber, Hospital_HospitalID)\
+        VALUES ('"+tid+"', '"+eta+"' , '"+queueStatus+"', '"+bookingStatus+"', '"+ padding(queueNumber)+"', '"+refQueueNumber+"',"+userPhoneNumber+", "+hospitalID+")", function(errinsert, result){
         if(errinsert){console.log("Error happens in Booking.js addBooking() INSERT. " + errinsert); return callback(errinsert, null);}
-        result = JSON.parse(JSON.stringify(result));
+        // result = JSON.parse(JSON.stringify(result));
         return callback(null, tid);});
       }
      else{
@@ -39,7 +39,7 @@ module.exports.queryBooking = function(tid, callback){
     }catch(e){
       return callback(e, null);
     }
-}
+};
 
 module.exports.updateQueueStatusToActive = function(tid, callback){ //The function only can run if the booking is not completed yet
   try{
@@ -125,15 +125,15 @@ module.exports.updateBookingStatusToCancelled = function(tid, callback){
 }
 };
 
-module.exports.queryAllBooking = function(userid, callback){
+module.exports.queryAllBooking = function(userPhoneNumber, callback){
   try{
-  database.query("SELECT COUNT(*) AS TOTAL FROM Booking WHERE User_UserID = '"+userid+"'", function(err, total){
+  database.query("SELECT COUNT(*) AS TOTAL FROM Booking WHERE User_UserPhoneNumber = '"+userPhoneNumber+"'", function(err, total){
     if(err){console.log("Error happens in Booking.js queryAllBooking() COUNT. " + err); return callback(err, null, null);}
     total = JSON.parse(JSON.stringify(total))[0].TOTAL;
-  database.query("SELECT * FROM Booking WHERE User_UserID = '"+userid+"'", function(err, bookingdata){
+  database.query("SELECT * FROM Booking WHERE User_PhoneNumber = '"+userPhoneNumber+"'", function(err, bookingdata){
   if(err) {console.log("Error happens in Booking.js queryBooking() SELECT. " + err); return callback(err, null, null);}
   else{
-  if(bookingdata.length == 0 || bookingdata == undefined) return callback('NOTFOUND', null);
+  if(bookingdata.length === 0 || bookingdata === undefined) return callback('NOTFOUND', null);
   bookingdata = (JSON.parse(JSON.stringify(bookingdata)));
   callback(err, total, bookingdata);
       };
@@ -142,7 +142,7 @@ module.exports.queryAllBooking = function(userid, callback){
   }catch(e){
   return callback(e, null, null);
     }
-}
+};
 //function updateBookingStatus(){};
 function padding(n){
     if(n>999){

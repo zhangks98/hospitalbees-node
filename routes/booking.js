@@ -65,39 +65,20 @@ const checkMissedTime = (result, callback) => {
 	callback(undefined, false);
 };
 
-router.route('/:userid/history')
-	.get(function (req, res) {
-		var userid = parseInt(req.params.userid, 10);
-		booking.queryAllBooking(userid, function (err, total, result) {
-			if (err) {
-				res.status(500);
-				res.json(htmlresponse.error(err, 'GET /booking/' + userid + '/history'));
-				return;
-			}
-			if (result != null && result.affectedRows === 0) {
-				res.status(404);
-				res.json(htmlresponse.error('NOTFOUND', 'GET /booking' + userid + '/history'));
-				return;
-			}
-			res.json(result);
-		});
-	});
-
 router.route('/')
 	.post(function (req, res) {
 		const hospitalID = Number(req.body.hospitalID);
-		const userID = req.body.userID;
+		const userPhoneNumber = req.body.phoneNumber;
 		const eta = Number(req.body.eta);
 
-		user.userAuthentication(userID, function (err0, result) {
+		user.queryUser(userPhoneNumber, function (err0, result) {
 			if (err0) {
-				res.status(403).json(htmlresponse.error('FORBIDDEN', 'POST /booking'));
+				res.status(404).json(htmlresponse.error('NOTFOUND', 'POST /booking' + 'cannot find user'));
 				return;
 			}
 			hospital.generateQueueNumber(hospitalID, function (err1, queueNumber) {
 				if (err1) {
-					res.status(500);
-					res.json(htmlresponse.error(err1, 'POST /booking'));
+					res.status(500).json(htmlresponse.error(err1, 'POST /booking'));
 					return;
 				} else {
 					hospital.incQueueNumberGenerator(hospitalID, function (err2, addstatus) {
@@ -123,7 +104,7 @@ router.route('/')
 						const queueStatus = 'INACTIVE';
 						const bookingStatus = 'PENDING';
 						let totalEta = Math.max(eta + queueLength * waitingTimePerPerson, defaultETA);
-						booking.addBooking(time, totalEta, queueStatus, bookingStatus, qNumber, refQueueNumber, userID,
+						booking.addBooking(time, totalEta, queueStatus, bookingStatus, qNumber, refQueueNumber, userPhoneNumber,
 							hospitalID, function (err3, tid) {
 								if (err3) {
 									res.status(500);
