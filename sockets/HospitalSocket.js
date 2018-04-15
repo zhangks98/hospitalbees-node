@@ -23,7 +23,7 @@ var removeHospital = (socketId) => {
 }
 
 var getOpenedHospitals = () => {
-	return hospitalList.map((hospital) => ({hospitalId: hospital.hospitalId, name: hospital.name}));
+	return hospitalList;
 }
 
 var connect = (io) => {
