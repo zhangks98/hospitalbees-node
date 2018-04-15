@@ -4,8 +4,8 @@ var secrets = require("../secrets");
 var serviceAccount = secrets.serviceAccount;
 
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-  databaseURL: "https://fir-testings-e032e.firebaseio.com"
+ credential:  admin.credential.cert(serviceAccount),
+  databaseURL: "https://hospitalbees.firebaseio.com"
 });
 
 var payload = {
@@ -13,16 +13,16 @@ var payload = {
 	ttl: 3600 * 1000,
 	priority : 'normal',
 	notification: {
-    title: "NASDAQ News",
-    body: "The NASDAQ climbs for the second day. Closes up 0.60%.",
+    title: "Hospital Bees",
+    body: "Please Be on Time!!!",
     sound : "default",
-	clickAction: "PlayActivity"	
+	clickAction: "MYQUEUE"
 	}
   },
   topic: 'news'
 };
 
-admin.messaging().send(payload) 
+admin.messaging().send(payload)
   .then(function(response) {
     console.log("Successfully sent message:", response);
   })
