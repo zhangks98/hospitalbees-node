@@ -9,16 +9,20 @@ admin.initializeApp({
 });
 
 var payload = {
-  notification: {
+	android: {
+	ttl: 3600 * 1000,
+	priority : 'normal',
+	notification: {
     title: "NASDAQ News",
     body: "The NASDAQ climbs for the second day. Closes up 0.60%.",
-    priority: "high",
-    sound : "default"
-  }
+    sound : "default",
+	clickAction: "PlayActivity"	
+	}
+  },
+  topic: 'news'
 };
-var topic = "news";
 
-admin.messaging().sendToTopic(topic, payload)
+admin.messaging().send(payload) 
   .then(function(response) {
     console.log("Successfully sent message:", response);
   })

@@ -1,17 +1,17 @@
 const hospitalSocket = require("../sockets/HospitalSocket");
 
-var io;
+let io;
 
 const TAG = "models.HospitalIO";
 
 
-var setSocket = (socket) => {
+const setSocket = (socket) => {
 	io = socket;
-}
+};
 
-var getHospital= (hospitalId) => {
+const getHospital= (hospitalId) => {
 	if (io) {
-		var hospital = hospitalSocket.getHospitalByHospitalId(hospitalId);
+		let hospital = hospitalSocket.getHospitalByHospitalId(hospitalId);
 		if (hospital) {
 			return hospital;
 		} else {
@@ -20,17 +20,48 @@ var getHospital= (hospitalId) => {
 	} else {
 		throw new Error(`Error connecting to the hospital [${hospitalId}]`);
 	}
-}
+};
 
-var getOpenedHospitals = (callback) => {
-	return callback(undefined, hospitalSocket.getOpenedHospitals());
-}
+const getQueueLengthPromise = (hospital) => {
+	return new Promise(((resolve, reject) => {
+		const socket = io.connected[hospital.socketId];
+		if (socket) {
+			socket.emit("getLength", (result) => {
+				ql = Number(result);
+				if (ql >= 0) {
+					resolve({
+						id: hospital.hospitalId,
+						name: hospital.name,
+						queueLength: ql
+					});
+				} else {
+					reject(`Error parsing queue length result for hospital [${hospital.hospitalId}]`)
+				}
+			});
+		} else {
+			reject(`Failed to connect to hospital [${hospital.hospitalId}]`);
+		}
+	}));
+};
 
-var getQueueTail = (hospitalId, callback) => {
+const getOpenedHospitals = (callback) => {
+	let promises = [];
+	hospitalSocket.getOpenedHospitals().forEach((hospital) => {
+		promises.push(getQueueLengthPromise(hospital));
+	});
+
+	Promise.all(promises).then((result) => {
+		return callback(undefined, result);
+	}, (err) => {
+		return callback(err);
+	});
+};
+
+const getQueueTail = (hospitalId, callback) => {
 	try {
-		var hospital = getHospital(hospitalId);
+		let hospital = getHospital(hospitalId);
 		io.connected[hospital.socketId].emit('peekLast', (tail) => {
-			var tailElement = JSON.parse(tail)
+			let tailElement = JSON.parse(tail);
 			if (tailElement) {
 				callback(undefined, tailElement);
 			} else {
@@ -41,26 +72,24 @@ var getQueueTail = (hospitalId, callback) => {
 		console.error(TAG, e.message);
 		callback(e.message);
 	}
-}
+};
 
-var getQueueLength = (hospitalId, callback) => {
+const getQueueLength = (hospitalId, callback) => {
 	try {
-		var hospital = getHospital(hospitalId);
-		io.connected[hospital.socketId].emit('getLength', (length) => {
-			var qlength = Number(length);
-			if (qlength >= 0) {
-				callback(undefined, qlength);
-			} else {
-				callback(`Error fetching queue length of hospital [${hospitalId}]: ${length}`);
-			}
-		});
+		let hospital = getHospital(hospitalId);
+		getQueueLengthPromise(hospital).then((result) => {
+			return callback(undefined, result.queueLength);
+		}, (err) => {
+			return callback(err);
+		})
+
 	} catch (e) {
 		console.error(TAG, e.message);
 		callback(e.message);
 	}
-}
+};
 
-var getQueueLengthFrom = (hospitalId, queueNumber, callback) => {
+const getQueueLengthFrom = (hospitalId, queueNumber, callback) => {
 	try {
 		var hospital = getHospital(hospitalId);
 		io.connected[hospital.socketId].emit('getLengthFrom', queueNumber, (length) => {
@@ -75,9 +104,9 @@ var getQueueLengthFrom = (hospitalId, queueNumber, callback) => {
 		console.error(TAG, e.message);
 		callback(e.message);
 	}
-}
+};
 
-var getQueueDetails = (hospitalId, queueNumber, callback) => {
+const getQueueDetails = (hospitalId, queueNumber, callback) => {
 	try {
 		var hospital = getHospital(hospitalId);
 		io.connected[hospital.socketId].emit('getQueueDetails', queueNumber, (q) => {
@@ -92,7 +121,7 @@ var getQueueDetails = (hospitalId, queueNumber, callback) => {
 		console.error(TAG, e.message);
 		callback(e.message);
 	}
-}
+};
 
 module.exports = {setSocket, getOpenedHospitals, getQueueTail, getQueueLength, getQueueLengthFrom, getQueueDetails}
 

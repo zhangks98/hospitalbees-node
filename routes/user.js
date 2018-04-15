@@ -1,5 +1,6 @@
 const express = require('express');
 const user = require('../models/User');
+const booking = require('../models/Booking');
 const htmlresponse = require('../utils/htmlresponse');
 
 // USER ROUTES FOR OUR API
@@ -69,6 +70,24 @@ router.route('/:phoneNumber')
 				return;
 			}
 			res.json(htmlresponse.success(200, result, 'DELETE /user/' + phoneNumber));
+		});
+	});
+
+router.route('/:phoneNumber/history')
+	.get(function (req, res) {
+		var phoneNumber = req.params.phoneNumber;
+		booking.queryAllBooking(phoneNumber, function (err, total, result) {
+			if (err) {
+				res.status(500);
+				res.json(htmlresponse.error(err, 'GET /booking/' + userid + '/history'));
+				return;
+			}
+			if (result != null && result.affectedRows === 0) {
+				res.status(404);
+				res.json(htmlresponse.error('NOTFOUND', 'GET /booking' + userid + '/history'));
+				return;
+			}
+			res.json(result);
 		});
 	});
 

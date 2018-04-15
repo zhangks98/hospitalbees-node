@@ -22,24 +22,14 @@ var updateDisease = (callback) => {
         if (error) {
             return console.dir(error);
         }
-        // var data = body.split('{"epi_week": ');
-        // var length = data.length;
-        //console.log(data[5]);
+
         var value = body.result.records[0];
-        //var arrData = data[2].split(',');
-        //console.log(value["no._of_cases"]);
         var week = value.epi_week;
         var cnt = 0;
         var rankArray = [];
         for (cnt = 0; cnt < 5; cnt++) {
             finalDisease.push(body.result.records[cnt].disease);
         }
-        //console.log(finalDisease);
-
-        //  console.log(finalDisease);
-        //  console.log(prop[0].Dname);
-        //  console.log(finalDisease[0]);
-        // console.log(finalDisease.indexOf(prop[0].Dname));
 
         try {
             database.query("SELECT Week as week_num, Disease_Name as Dname, No_of_cases as num_occ, ID as rank from diseases", function (err, prop) {
@@ -69,8 +59,8 @@ var updateDisease = (callback) => {
                                 }
                                 // return callback(1, 1);
                                 console.log("Has Difference");
-                                console.log(result);
-                                // TODO: allDisease.push(result);
+                                //console.log(result);
+
                             })
                         }
                     }
@@ -85,6 +75,7 @@ var updateDisease = (callback) => {
                         var delta = 6;
                         var dnum = 100000;
                         // TODO update the allDisease with the index of [new_rank] here
+
                         database.query("Update diseases set Week = '" + week + "', Disease_Name = '" + disease + "', No_of_cases = '" + new_num_of_cases + "', drank = '" + delta + "', dnum_of_cases = '" + dnum + "'Where ID = " + (new_rank + 1) + "", function (err, result) {
                             if (err) {
                                 console.log("Error happens in api.js changeDiseases INSERT. " + err);
@@ -95,6 +86,7 @@ var updateDisease = (callback) => {
                         })
                     }
                     return callback(1, 1);
+                    generateAlerts();
                 }
                 return callback(1, 0);
             })
@@ -108,7 +100,7 @@ function callback(a, b) {
     if (!a)
         console.log("Error 404. Please try again!")
     else if (a && !b) {
-        console.log("The databse is already updated!")
+        console.log("The database is already updated!")
         try {
             console.log("The list of diseases are: " + finalDisease);
             database.end();
@@ -130,7 +122,7 @@ function callback(a, b) {
 }
 
 function getDifference(a, b) {
-    // TODO: handle year difference
+    // TODO: handle year difference (handled by use of a_year and b_year)
     if (typeof a === 'number')
         a = a.toString();
     if (typeof b === 'number')
@@ -154,40 +146,4 @@ function getDifference(a, b) {
     else {
         return 0;
     }
-}
-
-var getAllDisease = function() {
-  if (allDisease.length === 5) {
-    return allDisease;
-  } else {
-    // TODO return the current content in the database
-  }
-}
-
-var changeDiseases = function (database, week, callback) {
-    // console.log(week);
-    //
-    // try{
-    //   database.query("SELECT Week as week_num from diseases", function(err,week_num){
-    //       if(err) {console.log("Error happens in api.js changeDiseases week_num" + err); return callback(0,null);};
-    //       console.log(getDifference("2017-W51","2017-W52"));
-    //       if(getDifference(week_num[week_num.length-1],week)>=1){
-    //         for(cnt;cnt<6;cnt++){
-    //           var arrData = data[cnt].split(',');
-    //           //var week = arrData[0];
-    //           var disease = arrData[2].replace('"disease": ','').trim();
-    //           var num_of_cases = parseInt(arrData[3].replace('"no._of_cases": ','').slice(2,-2));
-    //           //console.log(arrData,disease,num_of_cases);
-    //           database.query("INSERT INTO diseases VALUES ('" + week + "', '" + disease + "', '" + num_of_cases + "')", function(err, result){
-    //             if(err) {console.log("Error happens in api.js changeDiseases INSERT. " + err); return callback(0,1);};
-    //             return callback(1,1);
-    //           });
-    //         }
-    //       }
-    //       return callback(1,0);
-    //
-    //   })
-    // } catch(e){
-    //   console.log(e);
-    // }
 }
