@@ -11,8 +11,8 @@ var router = express.Router();              // get an instance of the express Ro
 router.route('/')
 // create a bear (accessed at POST http://localhost:8080/api/)
 	.post(function (req, res) {
-		var name = req.body.name;
-		var phoneNumber = req.body.phoneNumber;
+		const name = req.body.name;
+		const phoneNumber = req.body.phoneNumber;
 		// save the bear and check for errors
 		user.addUser(name, phoneNumber, function (err, success) {
 			if (err) {
@@ -31,7 +31,7 @@ router.route('/')
 
 router.route('/:phoneNumber/blockAccount')
 	.put(function (req, res) {
-		var phoneNumber = req.params.phoneNumber;
+		const phoneNumber = req.params.phoneNumber;
 		user.blockUser(phoneNumber, function (err, success) {
 			if (err) {
 				res.json(htmlresponse.error(err, 'PUT /user/' + phoneNumber + '/blockAccount'));
@@ -48,7 +48,7 @@ router.route('/:phoneNumber/blockAccount')
 
 router.route('/:phoneNumber')
 	.get(function (req, res) {
-		var phoneNumber = req.params.phoneNumber;
+		const phoneNumber = req.params.phoneNumber;
 		user.queryUser(phoneNumber, function (err, result) {
 			if (err) {
 				res.json(htmlresponse.error(err, 'GET /user/' + phoneNumber));
@@ -58,7 +58,7 @@ router.route('/:phoneNumber')
 		});
 	})
 	.delete(function (req, res) {
-		var phoneNumber = req.params.phoneNumber;
+		const phoneNumber = req.params.phoneNumber;
 		user.deleteUser(phoneNumber, function (err, result) {
 			if (err) {
 				res.json(htmlresponse.error(err, 'DELETE /user/' + phoneNumber ));
@@ -75,24 +75,16 @@ router.route('/:phoneNumber')
 
 router.route('/:phoneNumber/history')
 	.get(function (req, res) {
-		var phoneNumber = req.params.phoneNumber;
+		const phoneNumber = req.params.phoneNumber;
 		booking.queryAllBooking(phoneNumber, function (err, total, result) {
 			if (err) {
 				res.status(500);
-<<<<<<< HEAD
 				res.json(htmlresponse.error(err, 'GET /booking/' + phoneNumber + '/history'));
-=======
-				res.json(htmlresponse.error(err, 'GET /booking/' + userid + '/history'));
->>>>>>> 135b5a3ba12e9838ce45462b39c57a65f77e82e6
 				return;
 			}
 			if (result != null && result.affectedRows === 0) {
 				res.status(404);
-<<<<<<< HEAD
 				res.json(htmlresponse.error('NOTFOUND', 'GET /booking' + phoneNumber + '/history'));
-=======
-				res.json(htmlresponse.error('NOTFOUND', 'GET /booking' + userid + '/history'));
->>>>>>> 135b5a3ba12e9838ce45462b39c57a65f77e82e6
 				return;
 			}
 			res.json(result);
@@ -101,9 +93,9 @@ router.route('/:phoneNumber/history')
 
 router.route('/:phoneNumber/changeProfile')
 	.put(function (req, res) {
-		var phoneNumber = req.params.phoneNumber;
-		var id = req.body.id;
-		var name = req.body.name;
+		const phoneNumber = req.params.phoneNumber;
+		const id = req.body.id;
+		const name = req.body.name;
 		user.updateUserData(id, name, phoneNumber, function (err, success) {
 			if (err) {
 				res.json(htmlresponse.error(err, 'PUT /user/' + phoneNumber + '/changeProfile'));
@@ -120,8 +112,8 @@ router.route('/:phoneNumber/changeProfile')
 
 router.route('/:phoneNumber/fcmToken/:FCMToken')
 .put(function (req, res) {
-	var phoneNumber = req.params.phoneNumber;
-	var FCMToken = req.params.FCMToken;
+	const phoneNumber = req.params.phoneNumber;
+	const FCMToken = req.params.FCMToken;
 	user.updateFCMToken(phoneNumber, FCMToken,  function (err, success) {
 		if (err) {
 			res.json(htmlresponse.error(err, 'PUT /user/' + phoneNumber + '/updateNewToken'));

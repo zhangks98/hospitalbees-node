@@ -6,7 +6,7 @@ module.exports.addBooking = function(time, eta, queueStatus, bookingStatus, queu
     if((userPhoneNumber === undefined) || ( eta === undefined) || (hospitalID === undefined) || queueNumber === undefined){
     return callback('BADREQUEST', null);
   }
-  database.query("SELECT COUNT(*) AS PENDING_COUNT FROM Booking WHERE Booking_BookingStatus = 'PENDING' AND User_PhoneNumber = "+userPhoneNumber+"", function(errcount, pending){
+  database.query("SELECT COUNT(*) AS PENDING_COUNT FROM Booking WHERE Booking_BookingStatus = 'PENDING' AND User_PhoneNumber = "+userPhoneNumber+"", function(errcount, pending)
     if(errcount) {console.log("Error happens in Booking.js addBooking() COUNT" + errcount); return callback(errcount, null);}
     if(pending.length === 0 || pending === undefined) return callback('NOTFOUND', null);
     pending = JSON.parse(JSON.stringify(pending))[0].PENDING_COUNT;
@@ -22,7 +22,6 @@ module.exports.addBooking = function(time, eta, queueStatus, bookingStatus, queu
      else{
         return callback('COLLISION', null);
       }
-      })
     }catch(errsync){
       return callback(errsync, null);
     }
