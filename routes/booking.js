@@ -14,62 +14,6 @@ const missTimeAllowed = 30;
 // =============================================================================
 var router = express.Router();              // get an instance of the express Router
 //==============================================================================
-
-router.route('/:tid')
-	.get(function (req, res) {
-		//var userid = parseInt(req.params.userid, 10);
-		const tid = req.params.tid;
-		const TAG = 'GET /booking/' + tid;
-		booking.queryBooking(tid, function (err, result) {
-			if (err) {
-				res.status(500).json(htmlresponse.error(err, TAG));
-				return;
-			}
-			if (!result || result && result.affectedRows === 0) {
-				res.status(404).json(htmlresponse.error('NOTFOUND', TAG));
-				return;
-			}
-			checkMissedTime(result, (err, isAbsent) => {
-				if (err) {
-					res.status(500).json(htmlresponse.error(err, TAG + '- checkMissedTime'));
-					return;
-				} else {
-					if(isAbsent) {
-						res.status(410).send(`${tid} exceeded maximum missed time and is set as absent`);
-						return;
-					}
-					res.status(200).json(result);
-					return;
-				}
-			});
-		});
-	});
-
-const checkMissedTime = (result, callback) => {
-
-	if(result.Booking_QueueStatus === "MISSED") {
-		const tid = result.Booking_TID;
-		const hospitalId = Number(tid.substring(0, 4));
-		const queueNumber = tid.substring(tid.length - 4, tid.length);
-		hospitalIO.getQueueDetails(hospitalId, queueNumber, (queueElement) => {
-			const missedTime = Number(queueElement.missedTime);
-			if (missedTime > 0) {
-				let momentInstance = moment(missedTime);
-				if (momentInstance.add(missTimeAllowed, 'm').isBefore(moment())) {
-					booking.updateBookingStatusToAbsent(tid, (err, reslt) => {
-						if (err) {
-							return callback(err);
-						}
-						return callback(undefined, true);
-					});
-				}
-			}
-			return callback(undefined, false);
-		});
-	}
-	callback(undefined, false);
-};
-
 router.route('/')
 	.post(function (req, res) {
 		const hospitalID = Number(req.body.hospitalID);
@@ -133,6 +77,66 @@ router.route('/')
 				});
 			});
 		});
+	});
+
+router.route('/:tid')
+	.get(function (req, res) {
+		//var userid = parseInt(req.params.userid, 10);
+		const tid = req.params.tid;
+		const TAG = 'GET /booking/' + tid;
+		booking.queryBooking(tid, function (err, result) {
+			if (err) {
+				res.status(500).json(htmlresponse.error(err, TAG));
+				return;
+			}
+			if (!result || result && result.affectedRows === 0) {
+				res.status(404).json(htmlresponse.error('NOTFOUND', TAG));
+				return;
+			}
+			checkMissedTime(result, (err, isAbsent) => {
+				if (err) {
+					res.status(500).json(htmlresponse.error(err, TAG + '- checkMissedTime'));
+					return;
+				} else {
+					if(isAbsent) {
+						res.status(410).send(`${tid} exceeded maximum missed time and is set as absent`);
+						return;
+					}
+					res.status(200).json(result);
+					return;
+				}
+			});
+		});
+	});
+
+router.route('/:tid/notifyHead')
+	.post((req,res) => {
+		const tid = req.params.tid;
+		const TAG = 'POST /booking/' + tid + '/notifyHead';
+		getFCMToken(tid, (err, fcmToken) => {
+			if (err) {
+				res.status(500).json(htmlresponse.error(err,TAG))
+			}
+			// TODO fcm messaging
+			console.log(fcmToken);
+			res.status(200).json();
+
+		})
+	});
+
+router.route('/:tid/notifyApproaching')
+	.post((req,res) => {
+		const tid = req.params.tid;
+		const TAG = 'POST /booking/' + tid + '/notifyApproaching';
+		getFCMToken(tid, (err, fcmToken) => {
+			if (err) {
+				res.status(500).json(htmlresponse.error(err,TAG))
+			}
+			// TODO fcm messaging
+			console.log(fcmToken);
+			res.status(200).json();
+
+		})
 	});
 
 router.route('/:tid/QSUpdateToActive')
@@ -240,5 +244,58 @@ router.route('/:tid/BSUpdateToCancelled')
 			res.json(htmlresponse.success(200, result, 'PUT /booking' + tid + '/BSUpdateToCancelled'));
 		});
 	});
+
+const checkMissedTime = (result, callback) => {
+
+	if(result.Booking_QueueStatus === "MISSED") {
+		const tid = result.Booking_TID;
+		const hospitalId = Number(tid.substring(0, 4));
+		const queueNumber = tid.substring(tid.length - 4, tid.length);
+		hospitalIO.getQueueDetails(hospitalId, queueNumber, (queueElement) => {
+			const missedTime = Number(queueElement.missedTime);
+			if (missedTime > 0) {
+				let momentInstance = moment(missedTime);
+				if (momentInstance.add(missTimeAllowed, 'm').isBefore(moment())) {
+					booking.updateBookingStatusToAbsent(tid, (err, reslt) => {
+						if (err) {
+							return callback(err);
+						}
+						return callback(undefined, true);
+					});
+				}
+			}
+			return callback(undefined, false);
+		});
+	}
+	callback(undefined, false);
+};
+
+const getFCMToken = (tid, callback) => {
+	booking.queryBooking(tid, (err1, bookingData) => {
+		if (err1) {
+			callback(err1);
+			return;
+		}
+		let userPhoneNumber = bookingData.User_PhoneNumber;
+		if (userPhoneNumber) {
+			user.queryUser(userPhoneNumber, (err, userData) => {
+				if(err) {
+					callback(err);
+					return;
+				} else {
+					let fcmToken = userData.User_FCMToken;
+					if (fcmToken) {
+						callback(undefined, fcmToken);
+					} else {
+						callback("getFCMToken - FCMToken Not Found");
+					}
+				}
+			});
+		} else {
+			callback("getFCMToken - cannot find UserPhoneNumber")
+		}
+	});
+
+};
 
 module.exports = router;

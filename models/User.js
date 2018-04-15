@@ -65,10 +65,9 @@ module.exports.queryUser = function(phoneNumber, callback){
   try{
       database.query("SELECT * FROM User WHERE User_PhoneNumber = '"+phoneNumber+"' ", function(err, userdata){
       if(err) {console.log("Error happens in User.js queryUser() SELECT. " + err); return callback(err, null);}
-      if(userdata.length == 0 || userdata == undefined) return callback('NOTFOUND', null);   //console.log(JSON.parse(JSON.stringify(result))[0].Booking_QueueNumber);
+      if(userdata.length === 0 || userdata === undefined) return callback('NOTFOUND', null);   //console.log(JSON.parse(JSON.stringify(result))[0].Booking_QueueNumber);
       userdata = JSON.parse(JSON.stringify(userdata))[0];
       return callback(null, userdata);
-      console.log("success!");
       });
 } catch(e){
   return callback(e);
@@ -78,13 +77,13 @@ module.exports.queryUser = function(phoneNumber, callback){
 
 module.exports.updateUserData = function(id, name, phoneNumber, callback){
   try{
-  if((id == undefined || phoneNumber == undefined)){
+  if((id === undefined || phoneNumber === undefined)){
     return callback('BADREQUEST', null);
   }
   database.query("SELECT COUNT(*) AS TOTAL_PHONENUMBER FROM User WHERE (User_PhoneNumber = '"+phoneNumber+"' AND User_UserID != "+id+") ", function(err, totalPhoneNumber){
   if(err) {console.log("Error happens in User.js updateUserData() SELECT. " + err); return callback(err, null);}
   SamePhoneNumber = JSON.parse(JSON.stringify(totalPhoneNumber))[0].TOTAL_PHONENUMBER;
-  if (SamePhoneNumber == 0)
+  if (SamePhoneNumber === 0)
     database.query("UPDATE User SET \
     User_Name = '"+name+"', User_PhoneNumber = '"+phoneNumber+"'\
     WHERE User_UserID = "+id+"", function(err, status){
@@ -104,15 +103,15 @@ module.exports.updateUserData = function(id, name, phoneNumber, callback){
 
 module.exports.updateFCMToken = function(phoneNumber, newToken, callback){
   try{
-  if((phoneNumber == undefined || newToken == undefined)){
+  if((phoneNumber === undefined || newToken === undefined)){
     return callback('BADREQUEST', null);
   }
   database.query("SELECT COUNT(*) AS TOTAL_PHONENUMBER FROM User WHERE (User_PhoneNumber = '"+phoneNumber+"') ", function(err, totalPhoneNumber){
   if(err) {console.log("Error happens in User.js updateFCMToken() SELECT. " + err); return callback(err, null);}
   SamePhoneNumber = JSON.parse(JSON.stringify(totalPhoneNumber))[0].TOTAL_PHONENUMBER;
-  if (SamePhoneNumber == 0)
+  if (SamePhoneNumber === 0)
     database.query("UPDATE User SET \
-    User_FCMToken = '"+newToken+"'", function(err, status){
+    User_FCMToken = '"+newToken+"' WHERE (User_PhoneNumber = '"+phoneNumber+"')", function(err, status){
     if(err) {console.log("Error happens in User.js updateFCMToken() UPDATE. " + err); return callback(err, null);}
     status= JSON.parse(JSON.stringify(status));
     return callback(null, status);

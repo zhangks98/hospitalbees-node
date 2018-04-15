@@ -4,28 +4,24 @@ module.exports.error = function(err, source){
   if (err === 'BADREQUEST')
     return ({
     "timestamp": moment().utc().format(),
-    "status": 400,
     "error": "Bad Request",
     "path": source
 });
   else if (err === 'COLLISION')
     return ({
     "timestamp": moment().utc().format(),
-    "status": 409,
     "error": "Conflict",
     "path": source
 });
   else if (err === 'NOTFOUND')
     return({
     "timestamp": moment().utc().format(),
-    "status": 404,
     "error": "Not Found",
     "path": source
 });
   else if(err === "FORBIDDEN")
     return ({
     "timestamp": moment().utc().format(),
-    "status": 403,
     "error": "Not Found",
     "path": source
 });
@@ -33,10 +29,9 @@ module.exports.error = function(err, source){
     console.error(source, err);
     return({
     "timestamp": moment().utc().format(),
-    "status": 500,
     "error": "Internal Server Error",
     "message": err,
-    "path": null
+    "path": source
     });
   }
 };

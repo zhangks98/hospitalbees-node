@@ -16,7 +16,7 @@ router.route('/')
 		// save the bear and check for errors
 		user.addUser(name, phoneNumber, function (err, success) {
 			if (err) {
-				res.json(htmlresponse.error(err, 'POST /user'));
+				res.status(500).json(htmlresponse.error(err, 'POST /user'));
 				return;
 			}
 			if (success != null && success.affectedRows === 0) {
@@ -34,7 +34,7 @@ router.route('/:phoneNumber/blockAccount')
 		const phoneNumber = req.params.phoneNumber;
 		user.blockUser(phoneNumber, function (err, success) {
 			if (err) {
-				res.json(htmlresponse.error(err, 'PUT /user/' + phoneNumber + '/blockAccount'));
+				res.status(500).json(htmlresponse.error(err, 'PUT /user/' + phoneNumber + '/blockAccount'));
 				return;
 			}
 			if (success != null && success.affectedRows === 0) {
@@ -51,7 +51,7 @@ router.route('/:phoneNumber')
 		const phoneNumber = req.params.phoneNumber;
 		user.queryUser(phoneNumber, function (err, result) {
 			if (err) {
-				res.json(htmlresponse.error(err, 'GET /user/' + phoneNumber));
+				res.status(500).json(htmlresponse.error(err, 'GET /user/' + phoneNumber));
 				return;
 			}
 			res.json(result);
@@ -61,7 +61,7 @@ router.route('/:phoneNumber')
 		const phoneNumber = req.params.phoneNumber;
 		user.deleteUser(phoneNumber, function (err, result) {
 			if (err) {
-				res.json(htmlresponse.error(err, 'DELETE /user/' + phoneNumber ));
+				res.status(500).json(htmlresponse.error(err, 'DELETE /user/' + phoneNumber ));
 				return;
 			}
 			if (result != null && result.affectedRows === 0) {
@@ -98,7 +98,7 @@ router.route('/:phoneNumber/changeProfile')
 		const name = req.body.name;
 		user.updateUserData(id, name, phoneNumber, function (err, success) {
 			if (err) {
-				res.json(htmlresponse.error(err, 'PUT /user/' + phoneNumber + '/changeProfile'));
+				res.status(500).json(htmlresponse.error(err, 'PUT /user/' + phoneNumber + '/changeProfile'));
 				return;
 			}
 			if (success != null && success.affectedRows === 0) {
@@ -116,7 +116,7 @@ router.route('/:phoneNumber/fcmToken/:FCMToken')
 	const FCMToken = req.params.FCMToken;
 	user.updateFCMToken(phoneNumber, FCMToken,  function (err, success) {
 		if (err) {
-			res.json(htmlresponse.error(err, 'PUT /user/' + phoneNumber + '/updateNewToken'));
+			res.status(500).json(htmlresponse.error(err, 'PUT /user/' + phoneNumber + '/updateNewToken'));
 			return;
 		}
 		if (success != null && success.affectedRows === 0) {
