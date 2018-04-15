@@ -78,49 +78,59 @@ router.route('/')
 
 		user.queryUser(userPhoneNumber, function (err0, result) {
 			if (err0) {
-				res.status(404).json(htmlresponse.error('NOTFOUND', 'POST /booking' + 'cannot find user'));
+				res.status(404).json(htmlresponse.error('NOTFOUND', 'POST /booking - cannot find user'));
 				return;
 			}
-			hospital.generateQueueNumber(hospitalID, function (err1, queueNumber) {
-				if (err1) {
-					res.status(500).json(htmlresponse.error(err1, 'POST /booking'));
+			booking.checkDuplicatePendingBooking(userPhoneNumber, (err4, hasPendingBooking) => {
+				if(err4) {
+					res.status(500).json(htmlresponse.error(err1, 'POST /booking - checkPendingBooking'));
 					return;
-				} else {
-					hospital.incQueueNumberGenerator(hospitalID, function (err2, addstatus) {
-						if (err2) {
-							res.status(500).json(htmlresponse.error(err2, 'POST /booking'));
-							return;
-						}
-						if (addstatus != null && addstatus.affectedRows === 0) {
-							res.status(404).json(htmlresponse.error('NOTFOUND', 'POST /booking'));
-							return;
-						}
-					});
-					hospitalIO.getQueueTail(hospitalID, (err, tailQueueElement) => {
-						if (err) {
-							res.status(500);
-							res.json(htmlresponse.error(err, 'socketIO: getQueueTail'));
-							return;
-						}
-						const qNumber = Number(queueNumber.Hospital_QueueTail);
-						const refQueueNumber = tailQueueElement.queueNumber;
-						const queueLength = tailQueueElement.queueLength;
-						const time = moment().utc().format();
-						const queueStatus = 'INACTIVE';
-						const bookingStatus = 'PENDING';
-						let totalEta = Math.max(eta + queueLength * waitingTimePerPerson, defaultETA);
-						booking.addBooking(time, totalEta, queueStatus, bookingStatus, qNumber, refQueueNumber, userPhoneNumber,
-							hospitalID, function (err3, tid) {
-								if (err3) {
-									res.status(500);
-									res.json(htmlresponse.error(err3, 'POST /booking'));
-									return;
-								}
-								res.status(201).json({"tid": tid});
-							});
-
-					});
 				}
+				if (hasPendingBooking) {
+					res.status(409).json(htmlresponse.error('COLLISION', 'POST /booking - has duplicate booking'))
+					return;
+				}
+				hospital.generateQueueNumber(hospitalID, function (err1, queueNumber) {
+					if (err1) {
+						res.status(500).json(htmlresponse.error(err1, 'POST /booking'));
+						return;
+					} else {
+						hospital.incQueueNumberGenerator(hospitalID, function (err2, addstatus) {
+							if (err2) {
+								res.status(500).json(htmlresponse.error(err2, 'POST /booking'));
+								return;
+							}
+							if (addstatus != null && addstatus.affectedRows === 0) {
+								res.status(404).json(htmlresponse.error('NOTFOUND', 'POST /booking'));
+								return;
+							}
+						});
+						hospitalIO.getQueueTail(hospitalID, (err, tailQueueElement) => {
+							if (err) {
+								res.status(500);
+								res.json(htmlresponse.error(err, 'socketIO: getQueueTail'));
+								return;
+							}
+							const qNumber = Number(queueNumber.Hospital_QueueTail);
+							const refQueueNumber = tailQueueElement.queueNumber;
+							const queueLength = tailQueueElement.queueLength;
+							const time = moment().utc().format();
+							const queueStatus = 'INACTIVE';
+							const bookingStatus = 'PENDING';
+							let totalEta = Math.max(eta + queueLength * waitingTimePerPerson, defaultETA);
+							booking.addBooking(time, totalEta, queueStatus, bookingStatus, qNumber, refQueueNumber, userPhoneNumber,
+								hospitalID, function (err3, tid) {
+									if (err3) {
+										res.status(500);
+										res.json(htmlresponse.error(err3, 'POST /booking'));
+										return;
+									}
+									res.status(201).json({"tid": tid});
+								});
+
+						});
+					}
+				});
 			});
 		});
 	});

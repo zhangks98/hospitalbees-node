@@ -6,7 +6,6 @@ module.exports.error = function(err, source){
     "timestamp": moment().utc().format(),
     "status": 400,
     "error": "Bad Request",
-    "message": "No message available",
     "path": source
 });
   else if (err === 'COLLISION')
@@ -14,7 +13,6 @@ module.exports.error = function(err, source){
     "timestamp": moment().utc().format(),
     "status": 409,
     "error": "Conflict",
-    "message": "No message available",
     "path": source
 });
   else if (err === 'NOTFOUND')
@@ -22,7 +20,6 @@ module.exports.error = function(err, source){
     "timestamp": moment().utc().format(),
     "status": 404,
     "error": "Not Found",
-    "message": "No message available",
     "path": source
 });
   else if(err === "FORBIDDEN")
@@ -30,7 +27,6 @@ module.exports.error = function(err, source){
     "timestamp": moment().utc().format(),
     "status": 403,
     "error": "Not Found",
-    "message": "No message available",
     "path": source
 });
   else {
