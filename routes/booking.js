@@ -22,19 +22,24 @@ router.route('/:tid')
 		const TAG = 'GET /booking/' + tid;
 		booking.queryBooking(tid, function (err, result) {
 			if (err) {
-				return res.status(500).json(htmlresponse.error(err, TAG));
+				res.status(500).json(htmlresponse.error(err, TAG));
+				return;
 			}
 			if (!result || result && result.affectedRows === 0) {
-				return res.status(404).json(htmlresponse.error('NOTFOUND', TAG));
+				res.status(404).json(htmlresponse.error('NOTFOUND', TAG));
+				return;
 			}
 			checkMissedTime(result, (err, isAbsent) => {
 				if (err) {
-					return res.status(500).json(htmlresponse.error(err, TAG + '- checkMissedTime'));
+					res.status(500).json(htmlresponse.error(err, TAG + '- checkMissedTime'));
+					return;
 				} else {
 					if(isAbsent) {
-						return res.status(410).send(`${tid} exceeded maximum missed time and is set as absent`);
+						res.status(410).send(`${tid} exceeded maximum missed time and is set as absent`);
+						return;
 					}
-					return res.status(200).json(result);
+					res.status(200).json(result);
+					return;
 				}
 			});
 		});
@@ -44,7 +49,7 @@ const checkMissedTime = (result, callback) => {
 
 	if(result.Booking_QueueStatus === "MISSED") {
 		const tid = result.Booking_TID;
-		const hospitalId = tid.substring(0, 4);
+		const hospitalId = Number(tid.substring(0, 4));
 		const queueNumber = tid.substring(tid.length - 4, tid.length);
 		hospitalIO.getQueueDetails(hospitalId, queueNumber, (queueElement) => {
 			const missedTime = Number(queueElement.missedTime);
