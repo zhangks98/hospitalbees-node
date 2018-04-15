@@ -19,7 +19,7 @@ router.route('/')
 				res.json(htmlresponse.error(err, 'POST /user'));
 				return;
 			}
-			if (success != null && success.affectedRows == 0) {
+			if (success != null && success.affectedRows === 0) {
 				res.status(404);
 				res.json(htmlresponse.error('NOTFOUND', 'POST /user'));
 				return;
@@ -37,7 +37,7 @@ router.route('/:phoneNumber/blockAccount')
 				res.json(htmlresponse.error(err, 'PUT /user/' + phoneNumber + '/blockAccount'));
 				return;
 			}
-			if (success != null && success.affectedRows == 0) {
+			if (success != null && success.affectedRows === 0) {
 				res.status(404);
 				res.json(htmlresponse.error('NOTFOUND', 'PUT /user' + phoneNumber + '/blockAccount'));
 				return;
@@ -101,7 +101,7 @@ router.route('/:phoneNumber/changeProfile')
 				res.json(htmlresponse.error(err, 'PUT /user/' + phoneNumber + '/changeProfile'));
 				return;
 			}
-			if (success != null && success.affectedRows == 0) {
+			if (success != null && success.affectedRows === 0) {
 				res.status(404);
 				res.json(htmlresponse.error('NOTFOUND', 'PUT /user' + phoneNumber + '/changeProfile'));
 				return;
@@ -119,7 +119,7 @@ router.route('/:phoneNumber/fcmToken/:FCMToken')
 			res.json(htmlresponse.error(err, 'PUT /user/' + phoneNumber + '/updateNewToken'));
 			return;
 		}
-		if (success != null && success.affectedRows == 0) {
+		if (success != null && success.affectedRows === 0) {
 			res.status(404);
 			res.json(htmlresponse.error('NOTFOUND', 'PUT /user' + phoneNumber + '/updateNewToken'));
 			return;

@@ -35,16 +35,4 @@ module.exports.closeHospital = function(hospitalID, callback){
     }catch(e){
       return callback(e, null);
     }
-}
-
-/*module.exports.openHospital = function(hospitalID, callback){
-    try{
-    database.query("UPDATE Hospital SET Hospital_OpenClose = 1 WHERE Hospital_HospitalID = "+hospitalID+" ", function(err, result){
-    if(err) {console.log("Error happens in User.js closeHospital() SELECT. " + err); return callback(err, null);}   //console.log(JSON.parse(JSON.stringify(result))[0].Booking_QueueNumber);
-    result = JSON.parse(JSON.stringify(result));
-    return callback(null, result);
-      });
-    }catch(e){
-      return callback(e, null);
-    }
-}*/
+};
