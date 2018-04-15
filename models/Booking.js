@@ -13,7 +13,7 @@ module.exports.addBooking = function(time, eta, queueStatus, bookingStatus, queu
     if (pending === 0){
       var tid = padding(hospitalID) + time + padding(queueNumber);
         database.query("INSERT INTO Booking (Booking_TID, Booking_ETA, Booking_QueueStatus,\
-        Booking_BookingStatus, Booking_QueueNumber, Booking_ReferencedQueueNumber, User_UserPhoneNumber, Hospital_HospitalID)\
+        Booking_BookingStatus, Booking_QueueNumber, Booking_ReferencedQueueNumber, User_PhoneNumber, Hospital_HospitalID)\
         VALUES ('"+tid+"', '"+eta+"' , '"+queueStatus+"', '"+bookingStatus+"', '"+ padding(queueNumber)+"', '"+refQueueNumber+"',"+userPhoneNumber+", "+hospitalID+")", function(errinsert, result){
         if(errinsert){console.log("Error happens in Booking.js addBooking() INSERT. " + errinsert); return callback(errinsert, null);}
         // result = JSON.parse(JSON.stringify(result));
@@ -127,7 +127,7 @@ module.exports.updateBookingStatusToCancelled = function(tid, callback){
 
 module.exports.queryAllBooking = function(userPhoneNumber, callback){
   try{
-  database.query("SELECT COUNT(*) AS TOTAL FROM Booking WHERE User_UserPhoneNumber = '"+userPhoneNumber+"'", function(err, total){
+  database.query("SELECT COUNT(*) AS TOTAL FROM Booking WHERE User_PhoneNumber = '"+userPhoneNumber+"'", function(err, total){
     if(err){console.log("Error happens in Booking.js queryAllBooking() COUNT. " + err); return callback(err, null, null);}
     total = JSON.parse(JSON.stringify(total))[0].TOTAL;
   database.query("SELECT * FROM Booking WHERE User_PhoneNumber = '"+userPhoneNumber+"'", function(err, bookingdata){

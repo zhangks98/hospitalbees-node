@@ -30,13 +30,13 @@ CREATE TABLE `booking` (
   `Booking_ETA` int(11) NOT NULL,
   `Booking_QueueNumber` varchar(45) DEFAULT NULL,
   `Booking_ReferencedQueueNumber` varchar(45) DEFAULT NULL,
-  `User_UserID` int(11) NOT NULL,
+  `User_PhoneNumber` varchar(45) NOT NULL,
   `Hospital_HospitalID` int(11) NOT NULL,
-  PRIMARY KEY (`Booking_BookingID`,`User_UserID`,`Hospital_HospitalID`),
+  PRIMARY KEY (`Booking_BookingID`,`User_PhoneNumber`,`Hospital_HospitalID`),
   UNIQUE KEY `idBooking_UNIQUE` (`Booking_BookingID`),
-  KEY `fk_Booking_User_idx` (`User_UserID`),
+  KEY `fk_Booking_User_idx` (`User_PhoneNumber`),
   KEY `fk_Booking_Hospital1_idx` (`Hospital_HospitalID`)
-) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -45,7 +45,7 @@ CREATE TABLE `booking` (
 
 LOCK TABLES `booking` WRITE;
 /*!40000 ALTER TABLE `booking` DISABLE KEYS */;
-INSERT INTO `booking` VALUES (1,'1234567890','FINISHED','ABSENT',0,'0001',NULL,1,1),(7,'112018-03-30 01:00:001234','FINISHED','ABSENT',0,'1234',NULL,1,1),(8,'222018-03-30 23:23:432020','INACTIVE','PENDING',0,'2020',NULL,2,2),(9,'112018-03-31 16:00:002020','FINISHED','ABSENT',0,'2020',NULL,1,1),(11,'00022018-03-3117:00:002021','FINISHED','ABSENT',0,'2021',NULL,1,2),(20,'00012018-03-02T17:00:000006','FINISHED','ABSENT',0,'0006','0002',1,1),(25,'00012018-03-02T17:00:000026','FINISHED','ABSENT',0,'0026','undefined',1,1),(26,'00012018-03-02T17:00:000030','FINISHED','ABSENT',0,'0030','undefined',3,1);
+INSERT INTO `booking` VALUES (1,'1234567890','FINISHED','ABSENT',0,'0001',NULL,'1',1),(7,'112018-03-30 01:00:001234','FINISHED','ABSENT',0,'1234',NULL,'1',1),(8,'222018-03-30 23:23:432020','INACTIVE','PENDING',0,'2020',NULL,'2',2),(9,'112018-03-31 16:00:002020','FINISHED','ABSENT',0,'2020',NULL,'1',1),(11,'00022018-03-3117:00:002021','FINISHED','ABSENT',0,'2021',NULL,'1',2),(20,'00012018-03-02T17:00:000006','FINISHED','ABSENT',0,'0006','0002','1',1),(25,'00012018-03-02T17:00:000026','FINISHED','ABSENT',0,'0026','undefined','1',1),(26,'00012018-03-02T17:00:000030','FINISHED','ABSENT',0,'0030','undefined','3',1),(27,'00012018-04-15T09:14:42Z0002','ACTIVE','PENDING',30,'0002','NO_TAIL','90908080',1);
 /*!40000 ALTER TABLE `booking` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -76,7 +76,7 @@ CREATE TABLE `hospital` (
 
 LOCK TABLES `hospital` WRITE;
 /*!40000 ALTER TABLE `hospital` DISABLE KEYS */;
-INSERT INTO `hospital` VALUES (1,'Fullerton Health','36 Nanyang Avenue, #01-01/02, 639801','08:30:00','21:00:00','179.178.1.2',0,'1.345503000','103.682684500'),(2,'Ng Teng Fong General Hospital','1 Jurong East Street 21, Singapore 609606','00:00:00','23:59:59','133.122.3.4',0,'1.334030900','103.745111800'),(3,'Jurong Polyclinic','190 Jurong East Ave 1, Singapore 609788','08:00:00','16:30:00','144.133.6.5',0,'1.349792100','103.730619000');
+INSERT INTO `hospital` VALUES (1,'Fullerton Health','36 Nanyang Avenue, #01-01/02, 639801','08:30:00','21:00:00','179.178.1.2',3,'1.345503000','103.682684500'),(2,'Ng Teng Fong General Hospital','1 Jurong East Street 21, Singapore 609606','00:00:00','23:59:59','133.122.3.4',0,'1.334030900','103.745111800'),(3,'Jurong Polyclinic','190 Jurong East Ave 1, Singapore 609788','08:00:00','16:30:00','144.133.6.5',0,'1.349792100','103.730619000');
 /*!40000 ALTER TABLE `hospital` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -116,4 +116,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-04-11 22:02:08
+-- Dump completed on 2018-04-15 17:26:20

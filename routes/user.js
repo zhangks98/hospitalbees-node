@@ -79,12 +79,12 @@ router.route('/:phoneNumber/history')
 		booking.queryAllBooking(phoneNumber, function (err, total, result) {
 			if (err) {
 				res.status(500);
-				res.json(htmlresponse.error(err, 'GET /booking/' + userid + '/history'));
+				res.json(htmlresponse.error(err, 'GET /booking/' + phoneNumber + '/history'));
 				return;
 			}
 			if (result != null && result.affectedRows === 0) {
 				res.status(404);
-				res.json(htmlresponse.error('NOTFOUND', 'GET /booking' + userid + '/history'));
+				res.json(htmlresponse.error('NOTFOUND', 'GET /booking' + phoneNumber + '/history'));
 				return;
 			}
 			res.json(result);
