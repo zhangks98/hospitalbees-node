@@ -24,18 +24,22 @@ module.exports.addBooking = function(time, eta, queueStatus, bookingStatus, queu
 
 module.exports.checkDuplicatePendingBooking  = (userPhoneNumber,callback) => {
 	try {
-		database.query("SELECT COUNT(*) AS PENDING_COUNT FROM Booking WHERE Booking_BookingStatus = 'PENDING' AND User_PhoneNumber = " + userPhoneNumber + "", function (errcount, pending) {
+		database.query("SELECT * FROM Booking WHERE Booking_BookingStatus = 'PENDING' AND User_PhoneNumber = " + userPhoneNumber + "", function (errcount, pending) {
 			if (errcount) {
-				console.error("Error happens in Booking.js addBooking() COUNT" + errcount);
-				return callback(errcount);
+				console.error("Error happens in Booking.js addBooking() checkDuplicatePendingBooking" + errcount);
+				callback(errcount);
+				return;
 			}
-			if (pending.length === 0 || pending === undefined) return callback('NOTFOUND');
-			pending = JSON.parse(JSON.stringify(pending))[0].PENDING_COUNT;
-			if (pending === 0) {
+			if (pending === undefined) {
+				callback('NOTFOUND');
+			} else if (pending.length === 0) {
 				callback(undefined, false);
+			} else if (pending.length > 0) {
+				callback(undefined, true, pending[0].Booking_TID);
 			} else {
-				callback(undefined, true);
+				callback("Error happens in Booking.js addBooking() checkDuplicatePendingBooking - illegal pending object");
 			}
+
 		});
 	} catch (e) {
 	  return callback(e)

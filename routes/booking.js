@@ -8,7 +8,7 @@ const moment = require('moment');
 
 const waitingTimePerPerson = 7;
 const defaultETA = 20;
-const missTimeAllowed = 30;
+const missTimeAllowed = 0;
 
 // BOOKING ROUTES FOR OUR API
 // =============================================================================
@@ -25,13 +25,13 @@ router.route('/')
 				res.status(404).json(htmlresponse.error('NOTFOUND', 'POST /booking - cannot find user'));
 				return;
 			}
-			booking.checkDuplicatePendingBooking(userPhoneNumber, (err4, hasPendingBooking) => {
+			booking.checkDuplicatePendingBooking(userPhoneNumber, (err4, hasPendingBooking, duplicateDetails) => {
 				if(err4) {
 					res.status(500).json(htmlresponse.error(err1, 'POST /booking - checkPendingBooking'));
 					return;
 				}
 				if (hasPendingBooking) {
-					res.status(409).json(htmlresponse.error('COLLISION', 'POST /booking - has duplicate booking'))
+					res.status(409).json(htmlresponse.error('COLLISION', 'POST /booking - has duplicate booking ' + duplicateDetails));
 					return;
 				}
 				hospital.generateQueueNumber(hospitalID, function (err1, queueNumber) {
@@ -93,17 +93,18 @@ router.route('/:tid')
 				res.status(404).json(htmlresponse.error('NOTFOUND', TAG));
 				return;
 			}
-			checkMissedTime(result, (err, isAbsent) => {
+			checkMissedTimeAndLengthBefore(result, (err, isAbsent, newResult) => {
 				if (err) {
 					res.status(500).json(htmlresponse.error(err, TAG + '- checkMissedTime'));
 					return;
 				} else {
 					if(isAbsent) {
-						res.status(410).send(`${tid} exceeded maximum missed time and is set as absent`);
+						res.status(410).json(htmlresponse.error(`${tid} exceeded maximum missed time and is set as absent`, TAG + '- checkMissedTime'));
+						return;
+					} else {
+						res.status(200).json(newResult);
 						return;
 					}
-					res.status(200).json(result);
-					return;
 				}
 			});
 		});
@@ -245,29 +246,61 @@ router.route('/:tid/BSUpdateToCancelled')
 		});
 	});
 
-const checkMissedTime = (result, callback) => {
+const checkMissedTimeAndLengthBefore = (result, callback) => {
 
-	if(result.Booking_QueueStatus === "MISSED") {
-		const tid = result.Booking_TID;
-		const hospitalId = Number(tid.substring(0, 4));
-		const queueNumber = tid.substring(tid.length - 4, tid.length);
-		hospitalIO.getQueueDetails(hospitalId, queueNumber, (queueElement) => {
-			const missedTime = Number(queueElement.missedTime);
-			if (missedTime > 0) {
-				let momentInstance = moment(missedTime);
-				if (momentInstance.add(missTimeAllowed, 'm').isBefore(moment())) {
-					booking.updateBookingStatusToAbsent(tid, (err, reslt) => {
-						if (err) {
-							return callback(err);
-						}
-						return callback(undefined, true);
-					});
-				}
+	const tid = result.Booking_TID;
+	const hospitalId = Number(tid.substring(0, 4));
+
+	if(result.Booking_QueueStatus === "MISSED" || result.Booking_QueueStatus === "ACTIVE" || result.Booking_QueueStatus === "REACTIVATED") {
+
+		hospitalIO.getQueueDetails(hospitalId, tid, (err, queueElement) => {
+			if (err) {
+				callback(err);
+				return;
 			}
-			return callback(undefined, false);
+			if (queueElement) {
+				if (result.Booking_QueueStatus === queueElement.status
+					|| result.Booking_QueueStatus === "ACTIVE" && queueElement.status === "NOTIFIED"
+					|| result.Booking_QueueStatus === "REACTIVATED" && queueElement.status === "ACTIVE"
+					|| result.Booking_QueueStatus === "REACTIVATED" && queueElement.status === "NOTIFIED") {
+					if (result.Booking_QueueStatus === "MISSED") {
+						const missedTime = Number(queueElement.missedTime);
+						if (missedTime > 0) {
+							let momentInstance = moment(missedTime);
+							if (momentInstance.add(missTimeAllowed, 'm').isBefore(moment())) {
+								booking.updateBookingStatusToAbsent(tid, (err, reslt) => {
+									if (err) {
+										callback(err);
+									} else {
+										callback(undefined, true);
+									}
+								});
+							} else {
+								result.missedTime = missedTime;
+								result.missTimeAllowed = missTimeAllowed;
+								callback(undefined, false, result);
+							}
+						}
+					} else if (result.Booking_QueueStatus === "ACTIVE" && queueElement.status === "ACTIVE"
+						|| result.Booking_QueueStatus === "REACTIVATED" && queueElement.status === "ACTIVE") {
+						const length = Number(queueElement.lengthBefore);
+						result.lengthBefore = length;
+						callback(undefined, false, result);
+					} else if (queueElement.status === "NOTIFIED"){
+						result.lengthBefore = -1;
+						callback(undefined, false, result);
+					}
+				} else {
+					callback("Queue Status Inconsistent: Hospital - " + queueElement.status + " | HB - " + result.Booking_QueueStatus);
+				}
+			} else {
+				callback("Error fetching queue details");
+			}
+
 		});
+	} else {
+		callback(undefined, false, result);
 	}
-	callback(undefined, false);
 };
 
 const getFCMToken = (tid, callback) => {

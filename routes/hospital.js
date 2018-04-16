@@ -34,6 +34,19 @@ router.route('/:hospitalID/tail')
     });
 });
 
+router.route('/:hospitalID/:tid')
+	.get((req, res) => {
+		const TAG = 'GET /hospital/' + req.params.hospitalID + '/tail';
+		const tid = req.params.tid;
+		hospitalIO.getQueueDetails(Number(req.params.hospitalID), tid, function (err, result) {
+			if (err) {
+				res.status(500).json(htmlresponse.error(err, TAG));
+				return;
+			}
+			res.json(result);
+		});
+	});
+
 router.route('/:hospitalID/length')
 	.get(function (req, res) {
 		const TAG = 'GET /hospital/' + req.params.hospitalID + '/length';

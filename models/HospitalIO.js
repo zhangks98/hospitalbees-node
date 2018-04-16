@@ -106,15 +106,16 @@ const getQueueLengthFrom = (hospitalId, queueNumber, callback) => {
 	}
 };
 
-const getQueueDetails = (hospitalId, queueNumber, callback) => {
+const getQueueDetails = (hospitalId, tid, callback) => {
 	try {
 		var hospital = getHospital(hospitalId);
-		io.connected[hospital.socketId].emit('getQueueDetails', queueNumber, (q) => {
+		io.connected[hospital.socketId].emit('getQueueDetails', tid, (q) => {
+			// console.log(q);
 			var qElement = JSON.parse(q);
 			if (qElement) {
 				callback(undefined, qElement);
 			} else {
-				callback(`Error fetching details of queue number ${queueNumber} of hospital [${hospitalId}]`)
+				callback(`Error fetching details of tid ${tid} of hospital [${hospitalId}]`)
 			}
 		});
 	} catch (e) {
