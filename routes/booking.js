@@ -8,7 +8,7 @@ const moment = require('moment');
 
 const waitingTimePerPerson = 7;
 const defaultETA = 20;
-const missTimeAllowed = 0;
+const missTimeAllowed = 30;
 
 // BOOKING ROUTES FOR OUR API
 // =============================================================================
@@ -69,6 +69,7 @@ router.route('/')
 										res.json(htmlresponse.error(err3, 'POST /booking'));
 										return;
 									}
+									console.log("CREATED BOOKING", tid);
 									res.status(201).json({"tid": tid});
 								});
 
