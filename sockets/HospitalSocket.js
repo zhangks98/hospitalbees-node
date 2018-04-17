@@ -1,7 +1,7 @@
 var hospitalList = [];
 
-var addHospital = (socketId, hospitalId, name) => {
-	var hospital = {socketId, hospitalId, name};
+var addHospital = (socketId, hospitalId, name, lat, lng) => {
+	var hospital = {socketId, hospitalId, name, lat, lng};
 	hospitalList.push(hospital);
 	return hospital;
 }
@@ -30,6 +30,8 @@ var connect = (io) => {
 	io.use((socket, next) => {
 		let hospitalId = Number(socket.handshake.query.hospitalId);
 		let name = socket.handshake.query.name;
+		let lat = Number(socket.handshake.query.lat);
+		let lng = Number(socket.handshake.query.lng);
 		let hospital = getHospitalByHospitalId(hospitalId);
 		if (hospital) {
 			if (hospital.name === name) {
@@ -40,7 +42,7 @@ var connect = (io) => {
 			} else
 				return next(new Error(`hospital id [${hospitalId}] and name does not match`))
 		} else {
-			addHospital(socket.id, hospitalId, name);
+			addHospital(socket.id, hospitalId, name, lat, lng);
 			console.log(`${name} [${hospitalId}] is connected`);
 			return next();
 		}
