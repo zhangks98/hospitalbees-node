@@ -1,3 +1,8 @@
+/* The following helps to retrieve data from data.gov.sg
+and update the database with changes in positions and number
+of cases of each disease */
+
+
 var Request = require("request");
 const mysql = require('mysql');
 var _ = require('lodash');
@@ -15,11 +20,12 @@ var allDisease = [];
 var updateDisease = (callback) => {
     allDisease = [];
     var finalDisease = [];
+    //Send request to get data from url and store it in body as a JSON object
     Request.get({
         url: "https://data.gov.sg/api/action/datastore_search?resource_id=ef7e44f1-9b14-4680-a60a-37d2c9dda390&sort=epi_week desc, no._of_cases desc&limit=5",
         json: true
     }, (error, response, body) => {
-        if (error) {
+        if (error) {    //eror handling
             return console.dir(error);
         }
 
@@ -28,7 +34,7 @@ var updateDisease = (callback) => {
         var cnt = 0;
         var rankArray = [];
         for (cnt = 0; cnt < 5; cnt++) {
-            finalDisease.push(body.result.records[cnt].disease);
+            finalDisease.push(body.result.records[cnt].disease);  //updating array with new data posted onto the website weekly
         }
 
         try {
@@ -44,11 +50,9 @@ var updateDisease = (callback) => {
                             var new_rank = finalDisease.indexOf(prop[cnt].Dname);
                             var old_rank = cnt;
                             rankArray.push(new_rank);
-                            //console.log("prop2 is " + prop[0].num_occ);
                             var delta = old_rank - new_rank;
                             var old_num_of_cases = prop[cnt].num_occ;
                             var new_num_of_cases = body.result.records[new_rank]["no._of_cases"];
-                            //var week = arrData[0];
                             var dnum = new_num_of_cases - old_num_of_cases;
                             var disease = finalDisease[new_rank];
 
@@ -57,24 +61,19 @@ var updateDisease = (callback) => {
                                     console.log("Error happens in api.js changeDiseases INSERT. " + err);
                                     return callback(0, 1);
                                 }
-                                // return callback(1, 1);
                                 console.log("Has Difference");
-                                //console.log(result);
-
                             })
                         }
                     }
-                    var diffArr = [0, 1, 2, 3, 4].filter(function (x) {
+                    var diffArr = [0, 1, 2, 3, 4].filter(function (x) {//Used to find the empty positions in the databaase
                         return rankArray.indexOf(x) < 0
                     });
-                    //console.log("DiffArray is " + diffArr);
                     while (diffArr.length > 0) {
                         new_rank = diffArr.pop();
                         var new_num_of_cases = body.result.records[new_rank]["no._of_cases"];
                         var disease = finalDisease[new_rank];
                         var delta = 6;
                         var dnum = 100000;
-                        // TODO update the allDisease with the index of [new_rank] here
 
                         database.query("Update diseases set Week = '" + week + "', Disease_Name = '" + disease + "', No_of_cases = '" + new_num_of_cases + "', drank = '" + delta + "', dnum_of_cases = '" + dnum + "'Where ID = " + (new_rank + 1) + "", function (err, result) {
                             if (err) {
@@ -121,23 +120,22 @@ function callback(a, b) {
     }
 }
 
-function getDifference(a, b) {
-    // TODO: handle year difference (handled by use of a_year and b_year)
+function getDifference(a, b) { //Used to find the diference between two WEEK_NUMBER from the data
     if (typeof a === 'number')
         a = a.toString();
     if (typeof b === 'number')
         b = b.toString();
-    a_year = a.slice(0, 4);
+    a_year = a.slice(0, 4); //retrieving year from the WEEK_NUMBER
     b_year = b.slice(0, 4);
-    a_wk = a.slice(6);
+    a_wk = a.slice(6);//retrieving week from the WEEK_NUMBER
     b_wk = b.slice(6);
     //console.log(a_year);
     //console.log(b_year);
-    if (a_year.localeCompare(b_year) === -1) {
+    if (a_year.localeCompare(b_year) === -1) {//comparing year
         return 1;
     }
     else if (a_year.localeCompare(b_year) === 0) {
-        if (a_wk.localeCompare(b_wk) === -1)
+        if (a_wk.localeCompare(b_wk) === -1)//comparing week
             return 1;
         else {
             return 0;
