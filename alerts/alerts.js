@@ -4,13 +4,8 @@ and sending it as a JSON object to the
 server which is fetched using RESTful API*/
 
 const mysql = require('mysql');
+const con = require('../utils/Database')
 
-var con = mysql.createConnection({
-  host: "localhost",
-  user: "chiri",
-  password: "123456",
-  database: "application"
-});
 var getArray = [];
 var allDisease = [];
 //creating two global variables to keep track of list of alerts and disesase details
@@ -29,7 +24,7 @@ function createAlerts(alerts){  //This function helps in creating alerts by comp
         drank_result.push(alerts[cnt].Disease_Name + " moved up by " + alerts[cnt].drank + " position(s), coming to " + alerts[cnt].id + " and observed a decrease of " + Math.abs(alerts[cnt].dnum_of_cases) + " cases from last week totalling " + alerts[cnt].No_of_cases + " cases this week.");
     }
   }
-    else if(alerts[cnt].drank == 0){
+    else if(alerts[cnt].drank === 0){
       if(alerts[cnt].dnum_of_cases>=0){
         drank_result.push(alerts[cnt].Disease_Name + " stayed at position " + alerts[cnt].id + " and observed an increase of " + alerts[cnt].dnum_of_cases + " cases from last week totalling " + alerts[cnt].No_of_cases + " cases this week.");
       }
@@ -45,7 +40,7 @@ function createAlerts(alerts){  //This function helps in creating alerts by comp
           drank_result.push(alerts[cnt].Disease_Name + " moved down by " + Math.abs(alerts[cnt].drank) + " position(s), reaching position " + alerts[cnt].id + " and observed a decrease of " + Math.abs(alerts[cnt].dnum_of_cases) + " cases from last week totalling " + alerts[cnt].No_of_cases + " cases this week.");
         }
       }
-      else if(alerts[cnt].drank == 6){
+      else if(alerts[cnt].drank === 6){
         drank_result.push(alerts[cnt].Disease_Name + " is a new entry into the list at position " + alerts[cnt].id + " with " + alerts[cnt].No_of_cases + " cases this week.")
       }
     }

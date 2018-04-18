@@ -106,22 +106,14 @@ module.exports.updateFCMToken = function(phoneNumber, newToken, callback){
   if((phoneNumber === undefined || newToken === undefined)){
     return callback('BADREQUEST', null);
   }
-  database.query("SELECT COUNT(*) AS TOTAL_PHONENUMBER FROM User WHERE (User_PhoneNumber = '"+phoneNumber+"') ", function(err, totalPhoneNumber){
-  if(err) {console.log("Error happens in User.js updateFCMToken() SELECT. " + err); return callback(err, null);}
-  SamePhoneNumber = JSON.parse(JSON.stringify(totalPhoneNumber))[0].TOTAL_PHONENUMBER;
-  if (SamePhoneNumber === 0)
     database.query("UPDATE User SET \
     User_FCMToken = '"+newToken+"' WHERE (User_PhoneNumber = '"+phoneNumber+"')", function(err, status){
     if(err) {console.log("Error happens in User.js updateFCMToken() UPDATE. " + err); return callback(err, null);}
     status= JSON.parse(JSON.stringify(status));
     return callback(null, status);
-  });
-  else{
-    console.log("PLEASE CHANGE THE PHONE NUMBER");
-    return callback('COLLISION', null);
-  }
-  });
+    });
+
 }catch(e){
   return callback(e);
 }
-}
+};
