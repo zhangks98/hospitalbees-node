@@ -10,7 +10,7 @@ router.route('/')
       .get(function (req, res){
         alerts.getAlerts(function(err,result){
           if(err){
-            res.status(3000).json(htmlresponse.error('NOT FOUND', 'POST /Alerts - denied entry'));
+            res.status(404).json(htmlresponse.error('NOT FOUND', 'GET /Alerts - denied entry'));
             return
           }
           res.json(result);
