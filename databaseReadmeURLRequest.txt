@@ -1,5 +1,5 @@
 README for DATABASE:
-1)To run the program, please run the REST.js on your cmd!
+1)To run the program, please run the app.js on your cmd!
 2) Don't forget to load provided SQL file in MySQL
 3)/api/user/<nric> means:
 	for example, user has nric 123456, so in the url please use /api/user/123456 
@@ -8,64 +8,58 @@ README for DATABASE:
 Here are several query that is provided:
 
 
-
-POST http://localhost:8080/api/user
+*POST http://localhost:8080/api/user
 For: Create new user
-argument: nric (String)
-      	  name (String)
-	  password (String)
-	  phoneNumber (String)
-return: String ("User created")
+body: name (String)
+      phoneNumber(String)
+return: HTML response 201 (success)
+	HTML response 404 (failed) 
 
-PUT http://localhost:8080/api/user/<nric>/blockAccount
+
+*PUT http://localhost:8080/api/user/<phoneNumber>/blockAccount
 For: Set the account to blocked (binary: TRUE)
-argument: -
-return: String("Blocked")
+body: -
+return: HTML response 200 (success)
+	HTML response 404 (failed)
 
-GET http://localhost:8080/api/user/<nric>/<password>
+*GET http://localhost:8080/api/user/<phoneNumber>
 For: Get user data
-argument: -
-return: JSON file 
+body: -
+return: User JSON file (success)
+	HTML response 404 (failed) 
 
 
-DELETE http://localhost:8080/api/user/<nric>
+*DELETE http://localhost:8080/api/user/<phoneNumber>
 For: Delete the user
-argument: -
-return: String("The account has been deleted")
+body: -
+return: HTML Response 200 (success)
+	HTML response 404 (failed)
 
 
-PUT http://localhost:8080/api/user/<nric>/changeProfile
-For: Change user profile excluding password
-argument: id (int)
-	  name (String)
-	  nric (String)
-	  phoneNumber (String)
-return: String("Profile has been updated")
+*PUT http://localhost:8080/api/user/<phoneNumber>/changeProfile
+For: Change user profile (especially phone number)
+body: id (int)
+      name (String)
+return: HTML Response 200 (success)
+	HTML Response 404 (failed)
 
 
-PUT http://localhost:8080/api/user/<nric>/changePassword
-For: Change user profile excluding password
-argument: oldpassword (String)
-	  newpassword (String)
-	  confirmpassword (String)
-return: String("The Password has been updated")
-
-
-GET http://localhost:8080/api/user/<userid>/pending
-For: Return the information regarding current booking
-argument: -
-return: JSON file
-
-
-GET http://localhost:8080/api/user/<userid>/history
+*GET http://localhost:8080/api/user/<phoneNumber>/history
 For: Return the information regarding all booking
-argument: -
-return: JSON file
+body: -
+return: JSON file ALL booking history (success)
+	HTML Response 404 (failed)
+ 
+*PUT http://localhost:8080/api/user/<phoneNummber>/fcmToken/<NewFCMToken>
+For: Update the FCM Token to the database
+body: -
+return: HTML response 200 (success)
+	HTML response 404 (failed)
 
 
 POST http://localhost:8080/api/booking
 For: Add new booking
-argument: time(String)(XXXX-XX-XX XX:XX:XX)
+body: time(String)(XXXX-XX-XX XX:XX:XX)
 	  queueStatus (ENUM 'INACTIVE', 'ACTIVE', 'FINISHED')
 	  bookingStatus (ENUM 'PENDING', 'COMPLETED', 'ABSENT', 'CANCELLED')
 	  queueNumber (String) (XXXX)
@@ -75,37 +69,37 @@ Return: TID (String)
 
 PUT //localhost:8080/api/booking/<tid>/QSUpdateToActive
 For: Change queue status (QS) to 'ACTIVE'
-argument: -
+body: -
 Return: String ('ACTIVE');
 
 
 PUT //localhost:8080/api/booking/<tid>/QSUpdateToMissed
 For: Change queue status (QS) to 'MISSED'
-argument: -
+body: -
 Return: String ('MISSED');
 
 
 
 PUT //localhost:8080/api/booking/<tid>/BSUpdateToCompleted
 For: Change booking status to 'COMPLETED' and QS to 'FINISHED'
-argument: -
+body: -
 Return: String ('COMPLETED');
 
 
 
 PUT //localhost:8080/api/booking/<tid>/BSUpdateToAbsent
 For: Change booking status to 'ABSENT' and QS to 'FINISHED'
-argument: -
+body: -
 Return: String ('ABSENT');
 
 
 PUT //localhost:8080/api/booking/<tid>/BSUpdateToCancelled
 For: Change booking status to 'CANCELLED' and QS to 'FINISHED'
-argument: -
+body: -
 Return: String ('CANCELLED');
 
 
 GET //localhost:8080/api/hospital/<hospitalname>
 For: Get hospital data (HospitalID, Name, Address, StartingHours, ClosingHours)
-argument: -
+body: -
 Return: JSON File;
