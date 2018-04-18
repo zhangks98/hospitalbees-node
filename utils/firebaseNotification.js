@@ -1,4 +1,3 @@
-
 var admin = require("firebase-admin");
 var secrets = require("../secrets");
 var serviceAccount = secrets.serviceAccount;
@@ -8,24 +7,21 @@ admin.initializeApp({
   databaseURL: "https://hospitalbees.firebaseio.com"
 });
 
-var payload = {
-	android: {
-	ttl: 3600 * 1000,
-	priority : 'normal',
-	notification: {
-    title: "Hospital Bees",
-    body: "Please Be on Time!!!",
-    sound : "default",
-	clickAction: "MYQUEUE"
-	}
-  },
-  topic: 'news'
+// This registration token comes from the client FCM SDKs.
+// See documentation on defining a message payload.
+
+// Send a message to the device corresponding to the provided
+// registration token.
+var sendFCMMessage = function(message) {
+	admin.messaging().send(message)
+		.then((response) => {
+			// Response is a message ID string.
+			console.log('Successfully sent message:', response);
+		})
+		.catch((error) => {
+			console.log('Error sending message:', error);
+		});
 };
 
-admin.messaging().send(payload)
-  .then(function(response) {
-    console.log("Successfully sent message:", response);
-  })
-  .catch(function(error) {
-    console.log("Error sending message:", error);
-  });
+module.exports = {sendFCMMessage};
+

@@ -4,12 +4,13 @@ const booking = require('../models/Booking');
 const hospital = require('../models/Hospital');
 const hospitalIO = require('../models/HospitalIO');
 const htmlresponse = require('../utils/htmlresponse');
+const fcm = require("../utils/firebaseNotification")
 const moment = require('moment');
 
 const waitingTimePerPerson = 10;
 const defaultETA = 20;
 const missTimeAllowed = 30;
-
+const refreshQueueAction = "REFRESH_Q";
 // BOOKING ROUTES FOR OUR API
 // =============================================================================
 var router = express.Router();              // get an instance of the express Router
@@ -119,11 +120,19 @@ router.route('/:tid/notifyHead')
 			if (err) {
 				res.status(500).json(htmlresponse.error(err,TAG))
 			}
-			// TODO fcm messaging
-			console.log(fcmToken);
+			const payload = {
+				notification: {
+					title: "Your Q Number is Notified!",
+					body: "Please proceed to see the doctor"
+				},
+				data: {
+					action: refreshQueueAction
+				},
+				token: fcmToken
+			};
 			res.status(200).json();
-
-		})
+			fcm.sendFCMMessage(payload);
+		});
 	});
 
 router.route('/:tid/notifyApproaching')
@@ -134,11 +143,18 @@ router.route('/:tid/notifyApproaching')
 			if (err) {
 				res.status(500).json(htmlresponse.error(err,TAG))
 			}
-			// TODO fcm messaging
-			console.log(fcmToken);
+			const payload = {
+				notification: {
+					title: "Your Q Number is Approaching!",
+				},
+				data: {
+					action: refreshQueueAction
+				},
+				token: fcmToken
+			};
 			res.status(200).json();
-
-		})
+			fcm.sendFCMMessage(payload);
+		});
 	});
 
 router.route('/:tid/QSUpdateToActive')
@@ -156,6 +172,8 @@ router.route('/:tid/QSUpdateToActive')
 				return;
 			}
 			res.json(htmlresponse.success(200, result, 'PUT /booking' + tid + '/QSUpdateToActive'));
+
+			refreshMyQueue(tid);
 		});
 	});
 router.route('/:tid/QSUpdateToMissed')
@@ -173,6 +191,25 @@ router.route('/:tid/QSUpdateToMissed')
 				return;
 			}
 			res.json(htmlresponse.success(200, result, 'PUT /booking' + tid + '/QSUpdateToMissed'));
+			getFCMToken(tid, (err, fcmToken) => {
+				if (err) {
+					res.status(500).json(htmlresponse.error(err,TAG))
+				}
+				const payload = {
+					data: {
+						action: refreshQueueAction
+					},
+					notification: {
+						title: "You Missed your Q",
+						body: "Please reactivate within " + missTimeAllowed + " min"
+					},
+					data: {
+						action: refreshQueueAction
+					},
+					token: fcmToken
+				};
+				fcm.sendFCMMessage(payload);
+			});
 		});
 	});
 router.route('/:tid/QSUpdateToReactivated')
@@ -190,6 +227,7 @@ router.route('/:tid/QSUpdateToReactivated')
 				return;
 			}
 			res.json(htmlresponse.success(200, result, 'PUT /booking' + tid + '/QSUpdateToReactivated'));
+			refreshMyQueue(tid);
 		});
 	});
 
@@ -208,6 +246,7 @@ router.route('/:tid/BSUpdateToCompleted')
 				return;
 			}
 			res.json(htmlresponse.success(200, result, 'PUT /booking' + tid + '/BSUpdateToCompleted'));
+			refreshMyQueue(tid);
 		});
 	});
 
@@ -226,6 +265,21 @@ router.route('/:tid/BSUpdateToAbsent')
 				return;
 			}
 			res.json(htmlresponse.success(200, result, 'PUT /booking' + tid + '/BSUpdateToAbsent'));
+			getFCMToken(tid, (err, fcmToken) => {
+				if (err) {
+					res.status(500).json(htmlresponse.error(err,TAG))
+				}
+				const payload = {
+					notification: {
+						title: "Your booking is absent"
+					},
+					data: {
+						action: refreshQueueAction
+					},
+					token: fcmToken
+				};
+				fcm.sendFCMMessage(payload);
+			});
 		});
 	});
 
@@ -330,6 +384,21 @@ const getFCMToken = (tid, callback) => {
 		}
 	});
 
+};
+
+const refreshMyQueue = (tid) => {
+	getFCMToken(tid, (err, fcmToken) => {
+		if (err) {
+			res.status(500).json(htmlresponse.error(err,TAG))
+		}
+		const payload = {
+			data: {
+				action: refreshQueueAction
+			},
+			token: fcmToken
+		};
+		fcm.sendFCMMessage(payload);
+	});
 };
 
 module.exports = router;
