@@ -6,9 +6,9 @@ const hospitalIO = require('../models/HospitalIO');
 const htmlresponse = require('../utils/htmlresponse');
 const moment = require('moment');
 
-const waitingTimePerPerson = 7;
+const waitingTimePerPerson = 10;
 const defaultETA = 20;
-const missTimeAllowed = 0;
+const missTimeAllowed = 30;
 
 // BOOKING ROUTES FOR OUR API
 // =============================================================================
@@ -61,7 +61,7 @@ router.route('/')
 							const time = moment().utc().format();
 							const queueStatus = 'INACTIVE';
 							const bookingStatus = 'PENDING';
-							let totalEta = Math.max(eta + queueLength * waitingTimePerPerson, defaultETA);
+							let totalEta = Math.max(eta, queueLength * waitingTimePerPerson, defaultETA);
 							booking.addBooking(time, totalEta, queueStatus, bookingStatus, qNumber, refQueueNumber, userPhoneNumber,
 								hospitalID, function (err3, tid) {
 									if (err3) {
@@ -69,6 +69,7 @@ router.route('/')
 										res.json(htmlresponse.error(err3, 'POST /booking'));
 										return;
 									}
+									console.log("CREATED BOOKING", tid);
 									res.status(201).json({"tid": tid});
 								});
 

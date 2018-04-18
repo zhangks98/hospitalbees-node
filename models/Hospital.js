@@ -36,3 +36,5 @@ module.exports.closeHospital = function(hospitalID, callback){
       return callback(e, null);
     }
 };
+
+module.exports.hospitalMap = {1:"Fullerton Health NTU", 2: "Ng Teng Fong GH"};

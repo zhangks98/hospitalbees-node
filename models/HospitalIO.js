@@ -32,6 +32,8 @@ const getQueueLengthPromise = (hospital) => {
 					resolve({
 						id: hospital.hospitalId,
 						name: hospital.name,
+						lat: hospital.lat,
+						lng: hospital.lng,
 						queueLength: ql
 					});
 				} else {

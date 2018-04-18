@@ -1,3 +1,8 @@
+/*The following snippet helps in returning
+a list of alerts showing changes every week
+and sending it as a JSON object to the
+server which is fetched using RESTful API*/
+
 const mysql = require('mysql');
 
 var con = mysql.createConnection({
@@ -8,10 +13,9 @@ var con = mysql.createConnection({
 });
 var getArray = [];
 var allDisease = [];
+//creating two global variables to keep track of list of alerts and disesase details
 
-
-
-function createAlerts(alerts){
+function createAlerts(alerts){  //This function helps in creating alerts by comparing changes in positions and number of cases as well as handling new entries
   var cnt = 0;
   drank_result = [];
   console.log(alerts);
@@ -48,28 +52,14 @@ function createAlerts(alerts){
     getArray = drank_result;
 
 }
-//   module.export.getAlerts = function(callback){
-//   console.log("Alerts:");
-//   let diseaseList = getAllDisease();
-//   if(getArray.length !== 5){
-//     createAlerts(diseaseList);
-//   }
-// //  con.end();
-//   return {
-//     diseases: diseaseList,
-//     alerts: getArray
-//   }
-// }
 
-module.exports = {
+module.exports = {  //exporting the two functions so that they can be called from outside this code as well
 
   generateAlerts: function(){
       try{
         con.query("SELECT Disease_Name, drank, dnum_of_cases, id, No_of_cases FROM diseases", function(err, alerts){
           if(err){console.log("Error in alerts.js SELECT drank" + err);return callback(NULL);};
-  //callback(drank_result);
           createAlerts(alerts);
-
           })
     }catch(e){
         console.log(e);
@@ -77,15 +67,11 @@ module.exports = {
     },
     getAlerts: function(){
       console.log("Alerts:");
-      // console.log(getArray,getArray.length);
       let diseaseList = getAllDisease();
       console.log(diseaseList)
-      // if(diseaseList == undefined)
-      //   diseaseList = JSON.stringify(allDisease);
       if(getArray.length !== 5){
         createAlerts(diseaseList);
       }
-    //  con.end();
       return {
         diseases: diseaseList,
         alerts: getArray
@@ -95,21 +81,17 @@ module.exports = {
 
 var getAllDisease = function() {
   if (allDisease.length === 5) {
-    console.log("IN IFFFF");
+    //console.log("IN IFFFF");
     return allDisease.splice(0,5);
   } else {
     try{
-      console.log("IN ELSE");
+      //console.log("IN ELSE");
       con.query("SELECT Disease_Name, drank, dnum_of_cases, id, No_of_cases FROM diseases", function(err, diseaseDetails){
         if(err){console.log("Error in alerts.js SELECT drank" + err);return callback(NULL);};
-        // console.log("Disease", JSON.stringify(diseaseDetails));
         let allDiseaseStr = JSON.stringify(diseaseDetails);
         console.log("allDisease",allDiseaseStr.length);
-        // while(allDiseaseStr.length == 0);
-        //     setTimeout(()=>console.log("still not got data"),500);
         return allDisease;
 
-        // setTimeout(()=> JSON.stringify(diseaseDetails),2000);
       })
     }catch(e){
         console.log(e);

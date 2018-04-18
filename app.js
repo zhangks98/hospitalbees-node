@@ -48,8 +48,9 @@ app.use('/api/hospital', hospital);
 var hospitalNamespace = io.of('/hospital');
 hospitalSocket.connect(hospitalNamespace);
 hospitalIO.setSocket(hospitalNamespace);
-var userNamespace = io.of('/user');
-userSocket.connect(userNamespace);
+// User IO is not used, use FCM instead
+// var userNamespace = io.of('/user');
+// userSocket.connect(userNamespace);
 
 // START THE SERVER
 // =============================================================================

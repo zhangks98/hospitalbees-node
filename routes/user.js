@@ -1,6 +1,7 @@
 const express = require('express');
 const user = require('../models/User');
 const booking = require('../models/Booking');
+const hospital = require('../models/Hospital');
 const htmlresponse = require('../utils/htmlresponse');
 
 // USER ROUTES FOR OUR API
@@ -87,6 +88,10 @@ router.route('/:phoneNumber/history')
 				res.json(htmlresponse.error('NOTFOUND', 'GET /booking' + phoneNumber + '/history'));
 				return;
 			}
+			result.forEach((book) => {
+				let hospitalId = Number(book.Hospital_HospitalID);
+				book.Hospital_Name = hospital.hospitalMap[hospitalId];
+			});
 			res.json(result);
 		});
 	});
