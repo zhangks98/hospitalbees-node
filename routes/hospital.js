@@ -34,23 +34,42 @@ router.route('/:hospitalID/tail')
     });
 });
 
+router.route('/:hospitalID/length')
+	.get(function (req, res) {
+		const TAG = 'GET /hospital/' + req.params.hospitalID + '/length';
+		hospitalIO.getQueueLength(Number(req.params.hospitalID), function (err, result) {
+			if (err) {
+				res.status(500).json(htmlresponse.error(err, TAG));
+				return;
+			}
+			res.status(200).json(result);
+		});
+	});
+
+router.route('/:hospitalID/close')
+	.put(function(req, res) {
+		const hospitalId = req.params.hospitalID;
+		const TAG = 'PUT /hospital/' + hospitalId + '/close';
+		booking.updateAllBookingStatusesToAbsent(Number(hospitalId), (err, result) => {
+			if (err) {
+				res.status(500).json(htmlresponse.error(err, TAG));
+				return;
+			}
+			hospital.closeHospital(hospitalId, (err, result) => {
+				if (err) {
+					res.status(500).json(htmlresponse.error(err, TAG));
+					return;
+				}
+				res.status(200).json();
+			});
+		});
+	});
+
 router.route('/:hospitalID/:tid')
 	.get((req, res) => {
 		const TAG = 'GET /hospital/' + req.params.hospitalID + '/tail';
 		const tid = req.params.tid;
 		hospitalIO.getQueueDetails(Number(req.params.hospitalID), tid, function (err, result) {
-			if (err) {
-				res.status(500).json(htmlresponse.error(err, TAG));
-				return;
-			}
-			res.json(result);
-		});
-	});
-
-router.route('/:hospitalID/length')
-	.get(function (req, res) {
-		const TAG = 'GET /hospital/' + req.params.hospitalID + '/length';
-		hospitalIO.getQueueLength(Number(req.params.hospitalID), function (err, result) {
 			if (err) {
 				res.status(500).json(htmlresponse.error(err, TAG));
 				return;
@@ -71,23 +90,5 @@ router.route('/:hospitalID/:queueNumber/length')
 		});
 	});
 
-router.route('/:hospitalID/close')
-	          .put(function(req, res) {
-	    const hospitalId = req.params.hospitalID;
-		const TAG = 'PUT /hospital/' + hospitalId + '/close';
-        booking.updateAllBookingStatusesToAbsent(Number(hospitalId), (err, result) => {
-            if (err) {
-				res.status(500).json(htmlresponse.error(err, TAG));
-				return;
-			}
-			hospital.closeHospital(hospitalId, (err, result) => {
-	        	if (err) {
-					res.status(500).json(htmlresponse.error(err, TAG));
-					return;
-				}
-				res.status(200).json();
-        	});
-        });
-	});
 
 module.exports = router;
