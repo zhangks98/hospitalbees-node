@@ -10,8 +10,8 @@ router.route('/')
       .get(function (req, res){
         alerts.getAlerts(function(err,result){
           if(err){
-            res.status(404).json(htmlresponse.error('NOT FOUND', 'GET /Alerts - denied entry'));
-            return
+            res.status(500).json(htmlresponse.error('NOT FOUND', 'GET /Alerts - denied entry'));
+            return;
           }
           res.json(result);
         });

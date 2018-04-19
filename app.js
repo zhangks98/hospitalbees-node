@@ -18,6 +18,7 @@ const index = require('./routes/index');
 const user = require('./routes/user');
 const booking = require('./routes/booking');
 const hospital = require('./routes/hospital');
+const alerts = require('./routes/alertsRoute');
 
 // Socket.IO
 const hospitalSocket = require('./sockets/HospitalSocket');
@@ -43,6 +44,7 @@ app.use('/api', index);
 app.use('/api/user', user);
 app.use('/api/booking', booking);
 app.use('/api/hospital', hospital);
+app.use('/api/alerts', alerts);
 
 // hospital io
 var hospitalNamespace = io.of('/hospital');
